@@ -1,0 +1,19 @@
+sudo: required
+
+language: scala
+
+scala:
+  - 2.12.6
+  - 2.10.6
+  - 2.11.8
+
+env:
+  - DOCKERTAG=1.2.5-rc6-ci
+
+services:
+  - docker
+
+before_install:
+  - docker pull warp10io/warp10:$DOCKERTAG
+  - docker run -p 8080:8080 -p 8081:8081 -d -i warp10io/warp10:$DOCKERTAG
+  - docker ps -a
