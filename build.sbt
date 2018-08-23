@@ -1,6 +1,6 @@
 organization := """com.clevercloud"""
 
-name := """warp10-scala-client"""
+name := """akka-warp10-scala-client"""
 
 version := "3.0.0"
 
