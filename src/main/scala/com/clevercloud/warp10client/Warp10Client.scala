@@ -10,6 +10,7 @@ import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink, Source}
 
+import com.clevercloud.warp10client.Executioner.WarpScript
 import com.clevercloud.warp10client.models._
 import com.clevercloud.warp10client.models.gts_module.GTS
 
@@ -67,5 +68,13 @@ class WarpClient(warpContext: WarpClientContext) {
       .fromIterator(() => gtsSeq.grouped(batchSize))
       .via(Pusher.pushSeq(writeToken)(warpContext))
       .runForeach(_ => ())
+  }
+
+  def exec: Flow[WarpScript, Seq[GTS], NotUsed] = Executioner.exec()(warpContext)
+  def exec(script: WarpScript): Future[Seq[GTS]] = {
+    Source
+      .single(script)
+      .via(exec)
+      .runWith(Sink.head)
   }
 }

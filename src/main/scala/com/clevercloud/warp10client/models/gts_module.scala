@@ -3,12 +3,33 @@ package com.clevercloud.warp10client.models
 import java.net.URLDecoder
 import java.time._
 
-import scala.util.{Failure, Success, Try}
+import io.circe.{Json => CirceJson}
 import play.api.libs.json._
+import scala.util.{Failure, Success, Try}
 
 import com.clevercloud.warp10client.WarpException
 
 object gts_module {
+  case object gts_errors {
+    sealed trait InvalidGTSFormat
+    case object InvalidGTSStructureFormat extends InvalidGTSFormat
+    case class ListInvalidGTSFormat(errors: Seq[InvalidGTSFormat]) extends InvalidGTSFormat
+    case object InvalidGTSclassnameFormat extends InvalidGTSFormat
+    case object InvalidGTSLabelsFormat extends InvalidGTSFormat
+
+    sealed trait InvalidGTSPointFormat extends InvalidGTSFormat
+    case object InvalidGTSPointStructureFormat extends InvalidGTSPointFormat
+    case class ListInvalidGTSPointFormat(errors: Seq[InvalidGTSPointFormat]) extends InvalidGTSPointFormat
+    case object InvalidGTSPointValueFormat extends InvalidGTSPointFormat
+    case object InvalidGTSPointTimestampFormat extends InvalidGTSPointFormat
+    case object InvalidGTSPointCoordinatesFormat extends InvalidGTSPointFormat
+    case object InvalidGTSPointElevationFormat extends InvalidGTSPointFormat
+    case object CantParseAsBoolean extends InvalidGTSPointFormat
+    case object CantParseAsDouble extends InvalidGTSPointFormat
+    case object CantParseAsString extends InvalidGTSPointFormat
+  }
+  import gts_errors._
+
   implicit val gtsValueBooleanWrites = Json.writes[GTSBooleanValue]
   implicit val gtsValueLongWrites = Json.writes[GTSLongValue]
   implicit val gtsValueDoubleWrites = Json.writes[GTSDoubleValue]
@@ -32,16 +53,16 @@ object gts_module {
   }
 
   case class GTS(
-    name: String,
+    classname: String,
     labels: Map[String, String],
     points: Seq[GTSPoint]
   ) {
-    def serialize: String = points.map(_.serializeWith(name, labels)).toList.mkString("\n=")
+    def serialize: String = points.map(_.serializeWith(classname, labels)).toList.mkString("\n=")
     def filter(maxDate: Long): GTS = {
-      val filteredPoints: Seq[GTSPoint] = points.filter(_.ts.get >= maxDate)
+      val filteredPoints: Seq[GTSPoint] = points.filter(_.ts.isDefined).filter(_.ts.get >= maxDate)
       this.copy(points = filteredPoints)
     }
-    def oldestDate: GTSPoint = points.maxBy(_.ts.get)
+    def mostRecentPoint: GTSPoint = points.filter(_.ts.isDefined).maxBy(_.ts.get)
   }
 
   object GTS {
@@ -58,19 +79,19 @@ object gts_module {
 
     def parseGTS(input: String): Either[InvalidGTSFormat, GTS] = {
       val unparsedGTSPointList: List[String] = input.split("\n").toList
-      val firstPointWithLabelsAndName: String = unparsedGTSPointList.head
+      val firstPointWithLabelsAndclassname: String = unparsedGTSPointList.head
 
-      firstPointWithLabelsAndName match {
-        case gtsRegex(tsAsString, coordinatesAsString, elevAsString, nameAsString, labelsAsString, valueAsString) => {
+      firstPointWithLabelsAndclassname match {
+        case gtsRegex(tsAsString, coordinatesAsString, elevAsString, classnameAsString, labelsAsString, valueAsString) => {
           val tsEither = parseLong(notNullString(tsAsString), InvalidGTSPointTimestampFormat)
           val coordinatesEither = parseCoordinates(notNullString(coordinatesAsString))
           val elevEither = parseLong(notNullString(elevAsString), InvalidGTSPointElevationFormat)
-          val nameEither = if (notNullString(nameAsString).nonEmpty) Right(nameAsString) else Left(InvalidGTSNameFormat)
+          val classnameEither = if (notNullString(classnameAsString).nonEmpty) Right(classnameAsString) else Left(InvalidGTSclassnameFormat)
           val labelsEither = parseLabels(notNullString(labelsAsString))
           val valueEither = GTSValue.parse(notNullString(valueAsString))
 
-          (tsEither, coordinatesEither, elevEither, nameEither, labelsEither, valueEither) match {
-            case (Right(ts), Right(coordinates), Right(elev), Right(name), Right(labels), Right(value)) => {
+          (tsEither, coordinatesEither, elevEither, classnameEither, labelsEither, valueEither) match {
+            case (Right(ts), Right(coordinates), Right(elev), Right(classname), Right(labels), Right(value)) => {
               val firstPoint = GTSPoint(ts, coordinates, elev, value)
               val points = unparsedGTSPointList.drop(1).map { pointInput =>
                 GTSPoint.parse(pointInput) match {
@@ -79,11 +100,11 @@ object gts_module {
                 }
               }.toList // parse other points
 
-              Right(GTS(name = name, labels = labels, points = firstPoint :: points))
+              Right(GTS(classname = classname, labels = labels, points = firstPoint :: points))
             }
             case _ =>
               Left(ListInvalidGTSFormat(
-                Seq(tsEither, coordinatesEither, elevEither, nameEither, labelsEither, valueEither)
+                Seq(tsEither, coordinatesEither, elevEither, classnameEither, labelsEither, valueEither)
                   .filter(_.isLeft)
                   .map(_.left)
                   .map(_.get)
@@ -105,11 +126,11 @@ object gts_module {
     elev: Option[Long],
     value: GTSValue
   ) {
-    def serializeWith(name: String, labels: Map[String, String]): String = s"$serializeTs/$serializeCoordinates/$serializeElev ${serializeName(name)}${serializeLabels(labels)} $serializeValue"
+    def serializeWith(classname: String, labels: Map[String, String]): String = s"$serializeTs/$serializeCoordinates/$serializeElev ${serializeclassname(classname)}${serializeLabels(labels)} $serializeValue"
     private def serializeTs = ts.map(_.toString).getOrElse("")
     private def serializeCoordinates = coordinates.map(_.serialize).getOrElse("")
     private def serializeElev = elev.map(_.toString).getOrElse("")
-    private def serializeName(name: String) = name
+    private def serializeclassname(classname: String) = classname
     private def serializeLabels(labels: Map[String, String]) = labels.map(pair => pair._1 + "=" + pair._2).mkString("{", ",", "}")
     private def serializeValue = value.serialize
   }
@@ -266,19 +287,26 @@ object gts_module {
         Left(InvalidGTSPointValueFormat)
       }
     }
+
+    def parse(value: CirceJson): Either[InvalidGTSPointFormat, GTSValue] = {
+      if (value.isString) {
+        value.asString match {
+          case Some(string) => Right(GTSValue(string.substring(1, string.length - 1)))
+          case None => Left(CantParseAsString)
+        }
+      } else if (value.isBoolean) {
+        value.asBoolean match {
+          case Some(boolean) => Right(GTSValue(boolean))
+          case None => Left(CantParseAsBoolean)
+        }
+      } else if (value.isNumber) {
+        value.asNumber match {
+          case Some(number) => Right(GTSValue(number.toDouble))
+          case None => Left(CantParseAsDouble)
+        }
+      } else {
+        Left(InvalidGTSPointValueFormat)
+      }
+    }
   }
-
-  sealed trait InvalidGTSFormat
-  case object InvalidGTSStructureFormat extends InvalidGTSFormat
-  case class ListInvalidGTSFormat(errors: Seq[InvalidGTSFormat]) extends InvalidGTSFormat
-  case object InvalidGTSNameFormat extends InvalidGTSFormat
-  case object InvalidGTSLabelsFormat extends InvalidGTSFormat
-
-  sealed trait InvalidGTSPointFormat extends InvalidGTSFormat
-  case object InvalidGTSPointStructureFormat extends InvalidGTSPointFormat
-  case class ListInvalidGTSPointFormat(errors: Seq[InvalidGTSPointFormat]) extends InvalidGTSPointFormat
-  case object InvalidGTSPointValueFormat extends InvalidGTSPointFormat
-  case object InvalidGTSPointTimestampFormat extends InvalidGTSPointFormat
-  case object InvalidGTSPointCoordinatesFormat extends InvalidGTSPointFormat
-  case object InvalidGTSPointElevationFormat extends InvalidGTSPointFormat
 }
