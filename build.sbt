@@ -4,9 +4,9 @@ name := """akka-warp10-scala-client"""
 
 version := "2.5.12_10.1.1_1.0.0"
 
-scalaVersion := "2.12.4"
+scalaVersion := "2.12.6"
 
-crossScalaVersions := Seq("2.11.7", "2.12.4")
+crossScalaVersions := Seq("2.11.7", "2.12.6")
 
 val circeVersion = "0.9.3"
 
