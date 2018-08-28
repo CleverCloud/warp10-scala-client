@@ -41,7 +41,7 @@ object gts_module {
       val filteredPoints: Seq[GTSPoint] = points.filter(_.ts.get >= maxDate)
       this.copy(points = filteredPoints)
     }
-    def oldestDate: GTSPoint = points.maxBy(_.ts.get)
+    def mostRecentPoint: GTSPoint = points.maxBy(_.ts.get)
   }
 
   object GTS {
