@@ -38,10 +38,10 @@ object gts_module {
   ) {
     def serialize: String = points.map(_.serializeWith(name, labels)).toList.mkString("\n=")
     def filter(maxDate: Long): GTS = {
-      val filteredPoints: Seq[GTSPoint] = points.filter(_.ts.get >= maxDate)
+      val filteredPoints: Seq[GTSPoint] = points.filter(_.ts.isDefined).filter(_.ts.get >= maxDate)
       this.copy(points = filteredPoints)
     }
-    def mostRecentPoint: GTSPoint = points.maxBy(_.ts.get)
+    def mostRecentPoint: GTSPoint = points.filter(_.ts.isDefined).maxBy(_.ts.get)
   }
 
   object GTS {
