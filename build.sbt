@@ -8,6 +8,18 @@ scalaVersion := "2.12.6"
 
 crossScalaVersions := Seq("2.11.7", "2.12.6")
 
+
+val ARTIFACTORY_ADDON_HOST = sys.env.get("ARTIFACTORY_ADDON_HOST").getOrElse(throw new RuntimeException("Environment variable ARTIFACTORY_ADDON_HOST missing"))
+val ARTIFACTORY_SBT_RELEASE_REPOSITORY = sys.env.get("ARTIFACTORY_SBT_RELEASE_REPOSITORY").getOrElse(throw new RuntimeException("Environment variable ARTIFACTORY_SBT_RELEASE_REPOSITORY missing"))
+val ARTIFACTORY_SBT_RELEASE_USER = sys.env.get("ARTIFACTORY_SBT_RELEASE_USER").getOrElse(throw new RuntimeException("Environment variable ARTIFACTORY_SBT_RELEASE_USER missing"))
+val ARTIFACTORY_SBT_RELEASE_PASSWORD = sys.env.get("ARTIFACTORY_SBT_RELEASE_PASSWORD").getOrElse(throw new RuntimeException("Environment variable ARTIFACTORY_SBT_RELEASE_PASSWORD missing"))
+
+resolvers += "Artifactory Realm" at "https://" + ARTIFACTORY_ADDON_HOST + "/" + ARTIFACTORY_SBT_RELEASE_REPOSITORY
+
+publishTo := Some("Artifactory Realm" at "https://" + ARTIFACTORY_ADDON_HOST + ARTIFACTORY_SBT_RELEASE_REPOSITORY + ";build.timestamp=" + new java.util.Date().getTime)
+
+credentials += Credentials("Artifactory Realm", ARTIFACTORY_ADDON_HOST, ARTIFACTORY_SBT_RELEASE_USER, ARTIFACTORY_SBT_RELEASE_PASSWORD)
+
 val circeVersion = "0.9.3"
 
 libraryDependencies ++= Seq(
