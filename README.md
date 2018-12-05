@@ -22,18 +22,28 @@ implicit val warpConfiguration = WarpConfiguration("www.clever-cloud.com")
 val warpClient = WarpClient("clever-cloud.com", 80)
 
 val labels = Map(
-    "exactLabel=" -> "label1",
-    "regexLabel~" -> "lab.*"
+  "exactLabel=" -> "label1",
+  "regexLabel~" -> "lab.*"
 )
 
 warpClient.fetch(
-    "READ_TOKEN",
-    Query(
-        Selector("warpClass", labels),
-        FetchRange(LocalDateTime.now.minusSeconds(100), LocalDateTime.now)
-    )
+  "READ_TOKEN",
+  Query(
+    Selector("warpClass", labels),
+    FetchRange(LocalDateTime.now.minusSeconds(100), LocalDateTime.now)
+  )
 ).map { gts =>
-    println(Json.toJson(gts)) // using play-json writers
+  println(Json.toJson(gts)) // using play-json writers
+}
+
+warpClient.exec(s"""
+  1 h 'duration' STORE
+  NOW 'now' STORE
+  [ '${token.token}' '~alert.http.status' { 'owner_id' '561bf859-b1ae-41bd-bd89-3421fbad0697' } $$now $$duration ] FETCH
+  [ 0 1 ]
+  SUBLIST
+""").map { gtsList =>
+  ...
 }
 ```
 
