@@ -2,11 +2,11 @@ organization := """com.clevercloud"""
 
 name := """akka-warp10-scala-client"""
 
-version := "1.0.0"
+version := "1.0.1"
 
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.8"
 
-crossScalaVersions := Seq("2.11.7", "2.12.6")
+crossScalaVersions := Seq("2.11.7", "2.12.8")
 
 val circeVersion = "0.9.3"
 
