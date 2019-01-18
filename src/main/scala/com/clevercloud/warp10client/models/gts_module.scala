@@ -57,6 +57,7 @@ object gts_module {
     labels: Map[String, String],
     points: Seq[GTSPoint]
   ) {
+    def toSelector: String = s"~$classname{${labels.map { case (key,value) => s"$key=$value" }.mkString(",")}}"
     def serialize: String = points.map(_.serializeWith(classname, labels)).toList.mkString("\n=")
     def filter(maxDate: Long): GTS = {
       val filteredPoints: Seq[GTSPoint] = points.filter(_.ts.isDefined).filter(_.ts.get >= maxDate)
