@@ -4,11 +4,9 @@ master: [![Build Status](https://travis-ci.org/CleverCloud/akka-warp10-scala-cli
 
 It is based on AKKA Stream.
 
-It is a test project.
+## Configuration
 
-# Code examples
-
-```
+```scala
 import akka.actor._
 import akka.stream.ActorMaterializer
 
@@ -25,7 +23,11 @@ val labels = Map(
   "exactLabel=" -> "label1",
   "regexLabel~" -> "lab.*"
 )
+```
 
+## Classical usage
+
+```scala
 warpClient.fetch(
   "READ_TOKEN",
   Query(
@@ -45,6 +47,27 @@ warpClient.exec(s"""
 """).map { gtsList =>
   ...
 }
+
+warpClient.push(gts: GTS, "WRITE_TOKEN")
+// or
+warpClient.push(gts: Seq[GTS], "WRITE_TOKEN", batchSize = 300)
+```
+
+## Akka Streams usage
+
+```scala
+Flow[Query[FetchRange]]
+  .map { gtsSequence =>
+    ...
+  }
+
+Flow[WarpScript]
+  .map { gtsSequence =>
+    ...
+  }
+
+Flow[GTS]
+  .via(warpClient.push("WRITE_TOKEN"))
 ```
 
 Have a look at the test directory for functional tests and code examples
