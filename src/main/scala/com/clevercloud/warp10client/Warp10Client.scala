@@ -56,6 +56,7 @@ class WarpClient(warpContext: WarpClientContext) {
       .runWith(Sink.head)
   }
 
+  def pushSeq(writeToken: String): Flow[Seq[GTS], Unit, NotUsed] = Pusher.pushSeq(writeToken)(warpContext)
   def push(writeToken: String): Flow[GTS, Unit, NotUsed] = Pusher.push(writeToken)(warpContext)
   def push(gts: GTS, writeToken: String): Future[Done] = {
     Source
