@@ -7,8 +7,6 @@ import io.circe.{Json => CirceJson}
 import play.api.libs.json._
 import scala.util.{Failure, Success, Try}
 
-import com.clevercloud.warp10client.WarpException
-
 object gts_module {
   case object gts_errors {
     sealed trait InvalidGTSFormat
@@ -94,14 +92,13 @@ object gts_module {
           (tsEither, coordinatesEither, elevEither, classnameEither, labelsEither, valueEither) match {
             case (Right(ts), Right(coordinates), Right(elev), Right(classname), Right(labels), Right(value)) => {
               val firstPoint = GTSPoint(ts, coordinates, elev, value)
-              val points = unparsedGTSPointList.drop(1).map { pointInput =>
-                GTSPoint.parse(pointInput) match {
-                  case Left(e) => println(e) ; throw WarpException(-1, s"Can't parse ${pointInput.toString}")
-                  case Right(point) => point
+              unparsedGTSPointList
+                .drop(1) // drop first point which is already parsed
+                .map(GTSPoint.parse)
+                .foldRight(Right(Nil): Either[InvalidGTSFormat, List[GTSPoint]])((e, acc) => for (xs <- acc.right; x <- e.right) yield x :: xs) match {
+                  case Left(e) => Left(e)
+                  case Right(points) => Right(GTS(classname = classname, labels = labels, points = firstPoint :: points))
                 }
-              }.toList // parse other points
-
-              Right(GTS(classname = classname, labels = labels, points = firstPoint :: points))
             }
             case _ =>
               Left(ListInvalidGTSFormat(

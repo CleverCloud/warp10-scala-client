@@ -13,7 +13,7 @@ import io.circe.parser._
 
 import com.clevercloud.warp10client.models.gts_module._
 
-object Executioner {
+object Runner {
   type WarpScript = String
 
   def exec()(
@@ -57,10 +57,7 @@ object Executioner {
             Source.fromFuture(
               WarpClientUtils
                 .readAllDataBytes(httpResponse.entity.dataBytes)
-                .map(content => WarpException(
-                  httpResponse.status.intValue,
-                  content
-                ))
+                .map(content => WarpException(s"HTTP status: $httpResponse.status.intValue: $content"))
                 .map(throw _)
             )
           }
@@ -69,12 +66,12 @@ object Executioner {
       }
   }
 
-  private def parseJson(): Flow[String, Json, NotUsed] = {
+  private def parseJson: Flow[String, Json, NotUsed] = {
     Flow[String]
       .map { s =>
         parse(s) match {
           case Right(json) => json
-          case Left(e) => throw WarpException(500, e.toString)
+          case Left(e) => throw WarpException(s"Error on parsing: $e")
         }
       }
   }
@@ -84,9 +81,9 @@ object Executioner {
       .via(parseJson)
       .map { json => json.hcursor.downArray } // warp response contains [[]] or [{}] so we drop an array level
       .map { array => // global array with all matching script
-        array.values.getOrElse(throw WarpException(500, "No data to process.")).map { series => // http://www.warp10.io/apis/gts-output-format/
-          val `class` = series.hcursor.getOrElse[String]("c")("").right.getOrElse(throw WarpException(500, "Can't parse `class` value."))
-          val labels = series.hcursor.getOrElse[Map[String, String]]("l")(Map.empty[String, String]).right.getOrElse(throw WarpException(500, "Cant parse `labels` value."))
+        array.values.getOrElse(throw WarpException(s"No data to parse.")).map { series => // http://www.warp10.io/apis/gts-output-format/
+          val `class` = series.hcursor.getOrElse[String]("c")("").right.getOrElse(throw WarpException( "Can't parse `class` value."))
+          val labels = series.hcursor.getOrElse[Map[String, String]]("l")(Map.empty[String, String]).right.getOrElse(throw WarpException("Cant parse `labels` value."))
           GTS(
             classname = `class`,
             labels = labels,

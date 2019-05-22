@@ -4,7 +4,7 @@ import java.util.UUID
 
 import scala.concurrent.Future
 
-import akka.{Done, NotUsed}
+import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
@@ -56,22 +56,22 @@ class WarpClient(warpContext: WarpClientContext) {
       .runWith(Sink.head)
   }
 
-  def pushSeq(writeToken: String): Flow[Seq[GTS], Future[Unit], NotUsed] = Pusher.pushSeq(writeToken)(warpContext)
-  def push(writeToken: String): Flow[GTS, Future[Unit], NotUsed] = Pusher.push(writeToken)(warpContext)
-  def push(gts: GTS, writeToken: String): Future[Done] = {
+  def pushSeq(writeToken: String): Flow[Seq[GTS], Future[Either[WarpException, Unit]], NotUsed] = Pusher.pushSeq(writeToken)(warpContext)
+  def push(writeToken: String): Flow[GTS, Future[Either[WarpException, Unit]], NotUsed] = Pusher.push(writeToken)(warpContext)
+  def push(gts: GTS, writeToken: String): Future[Either[WarpException, Unit]] = {
     Source
       .single(gts)
       .via(push(writeToken))
-      .runWith(Sink.ignore)
+      .runWith(Sink.fold[Future[Either[WarpException, Unit]], Future[Either[WarpException, Unit]]](Future.successful(Right(())))((a, b) => a.flatMap(_ => b))).flatten
   }
-  def push(gtsSeq: Seq[GTS], writeToken: String, batchSize: Int = 100): Future[Done] = {
+  def push(gtsSeq: Seq[GTS], writeToken: String, batchSize: Int = 100): Future[Either[WarpException, Unit]] = {
     Source
       .fromIterator(() => gtsSeq.grouped(batchSize))
       .via(Pusher.pushSeq(writeToken)(warpContext))
-      .runWith(Sink.ignore)
+      .runWith(Sink.fold[Future[Either[WarpException, Unit]], Future[Either[WarpException, Unit]]](Future.successful(Right(())))((a, b) => a.flatMap(_ => b))).flatten
   }
 
-  def exec: Flow[WarpScript, Future[Seq[GTS]], NotUsed] = Runner.exec()(warpContext)
+  def exec: Flow[WarpScript, Seq[GTS], NotUsed] = Runner.exec()(warpContext)
   def exec(script: WarpScript): Future[Seq[GTS]] = {
     Source
       .single(script)

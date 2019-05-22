@@ -22,9 +22,7 @@ object WarpClientUtils {
   def readAllDataBytes(dataBytesSource: Source[ByteString, _])(implicit actorMaterializer: ActorMaterializer): Future[String] = {
     implicit val executionContext = actorMaterializer.system.dispatcher
     dataBytesSource
-      .runFold(ByteString.empty) {
-        case (seq, item) => seq ++ item
-      }
+      .runFold(ByteString.empty)({ case (seq, item) => seq ++ item })
       .map(_.decodeString("UTF-8"))
   }
 
@@ -46,13 +44,13 @@ case class WarpClientContext(
   implicit def implicitWarpConfiguration: WarpConfiguration = configuration
 }
 
-case class WarpException(statusCode: Int, error: String) extends Exception(s"HTTP $statusCode: $error")
+case class WarpException(error: String) extends Exception(error)
 
 object `X-Warp10-Token` {
   def apply(value: String): HttpHeader = {
     HttpHeader.parse("X-Warp10-Token", value) match {
       case ParsingResult.Ok(httpHeader, _) => httpHeader
-      case ParsingResult.Error(error) => throw WarpException(-1, s"${error.summary}: ${error.detail}.")
+      case ParsingResult.Error(error) => throw WarpException(s"${error.summary}: ${error.detail}.")
     }
   }
 }

@@ -14,7 +14,7 @@ import com.clevercloud.warp10client.models.gts_module.GTS
 object Pusher {
   def push(writeToken: String)(
     implicit warpClientContext: WarpClientContext
-  ): Flow[GTS, Future[Unit], NotUsed] = {
+  ): Flow[GTS, Future[Either[WarpException, Unit]], NotUsed] = {
     val uuid = UUID.randomUUID
     Flow[GTS]
       .map(gts => pushRequest(gts, writeToken))
@@ -24,13 +24,13 @@ object Pusher {
       .map({ case (responseTry, _) => responseTry })
       .map {
         case Success(response) => processResponse(response)
-        case Failure(e) => Future.failed(e)
+        case Failure(e) => Future.successful(Left(WarpException(s"Error: $e")))
       }
   }
 
   def pushSeq(writeToken: String)(
     implicit warpClientContext: WarpClientContext
-  ): Flow[Seq[GTS], Future[Unit], NotUsed] = {
+  ): Flow[Seq[GTS], Future[Either[WarpException, Unit]], NotUsed] = {
     val uuid = UUID.randomUUID
     Flow[Seq[GTS]]
       .map(gtsSeq => pushSeqRequest(gtsSeq, writeToken))
@@ -40,7 +40,7 @@ object Pusher {
       .map({ case (responseTry, _) => responseTry })
       .map {
         case Success(response) => processResponse(response)
-        case Failure(e) => Future.failed(e)
+        case Failure(e) => Future.successful(Left(WarpException(s"Error: $e")))
       }
   }
 
@@ -68,15 +68,15 @@ object Pusher {
 
   def processResponse(httpResponse: HttpResponse)(
     implicit warpClientContext: WarpClientContext
-  ): Future[Unit] = {
+  ): Future[Either[WarpException, Unit]] = {
     import warpClientContext._
 
     if (httpResponse.status == StatusCodes.OK) {
-      Future.successful(httpResponse.discardEntityBytes())
+      Future.successful(Right(httpResponse.discardEntityBytes()))
     } else {
       WarpClientUtils
         .readAllDataBytes(httpResponse.entity.dataBytes)
-        .map(content => Future.failed(WarpException(httpResponse.status.intValue, content)))
+        .map(content => Left(WarpException(s"HTTP status: $httpResponse.status.intValue: $content")))
     }
   }
 }
