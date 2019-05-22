@@ -14,7 +14,7 @@ import com.clevercloud.warp10client.models.gts_module.GTS
 object Pusher {
   def push(writeToken: String)(
     implicit warpClientContext: WarpClientContext
-  ): Flow[GTS, Unit, NotUsed] = {
+  ): Flow[GTS, Future[Unit], NotUsed] = {
     val uuid = UUID.randomUUID
     Flow[GTS]
       .map(gts => pushRequest(gts, writeToken))
@@ -22,7 +22,7 @@ object Pusher {
       .via(warpClientContext.poolClientFlow)
       .filter({ case (_, key) => key == uuid })
       .map({ case (responseTry, _) => responseTry })
-      .mapAsync(1) {
+      .map {
         case Success(response) => processResponse(response)
         case Failure(e) => Future.failed(e)
       }
@@ -30,7 +30,7 @@ object Pusher {
 
   def pushSeq(writeToken: String)(
     implicit warpClientContext: WarpClientContext
-  ): Flow[Seq[GTS], Unit, NotUsed] = {
+  ): Flow[Seq[GTS], Future[Unit], NotUsed] = {
     val uuid = UUID.randomUUID
     Flow[Seq[GTS]]
       .map(gtsSeq => pushSeqRequest(gtsSeq, writeToken))
@@ -38,7 +38,7 @@ object Pusher {
       .via(warpClientContext.poolClientFlow)
       .filter({ case (_, key) => key == uuid })
       .map({ case (responseTry, _) => responseTry })
-      .mapAsync(1) {
+      .map {
         case Success(response) => processResponse(response)
         case Failure(e) => Future.failed(e)
       }
@@ -76,8 +76,7 @@ object Pusher {
     } else {
       WarpClientUtils
         .readAllDataBytes(httpResponse.entity.dataBytes)
-        .map(WarpException(httpResponse.status.intValue, _))
-        .map(throw _)
+        .map(content => Future.failed(WarpException(httpResponse.status.intValue, content)))
     }
   }
 }

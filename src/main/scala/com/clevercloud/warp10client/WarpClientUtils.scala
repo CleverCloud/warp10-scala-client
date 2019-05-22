@@ -7,8 +7,8 @@ import scala.util.Try
 
 import akka.NotUsed
 import akka.actor.ActorSystem
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.HttpHeader.ParsingResult
-import akka.http.scaladsl.model.{HttpHeader, HttpRequest, HttpResponse}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
@@ -46,7 +46,7 @@ case class WarpClientContext(
   implicit def implicitWarpConfiguration: WarpConfiguration = configuration
 }
 
-case class WarpException(statusCode: Long, error: String) extends Exception(error)
+case class WarpException(statusCode: Int, error: String) extends Exception(s"HTTP $statusCode: $error")
 
 object `X-Warp10-Token` {
   def apply(value: String): HttpHeader = {
