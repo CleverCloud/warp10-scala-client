@@ -4,13 +4,13 @@ import java.util.UUID
 
 import scala.concurrent.Future
 
-import akka.{Done, NotUsed}
+import akka.NotUsed
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Sink, Source}
 
-import com.clevercloud.warp10client.Executioner.WarpScript
+import com.clevercloud.warp10client.Runner.WarpScript
 import com.clevercloud.warp10client.models._
 import com.clevercloud.warp10client.models.gts_module.GTS
 
@@ -56,22 +56,22 @@ class WarpClient(warpContext: WarpClientContext) {
       .runWith(Sink.head)
   }
 
-  def pushSeq(writeToken: String): Flow[Seq[GTS], Unit, NotUsed] = Pusher.pushSeq(writeToken)(warpContext)
-  def push(writeToken: String): Flow[GTS, Unit, NotUsed] = Pusher.push(writeToken)(warpContext)
-  def push(gts: GTS, writeToken: String): Future[Done] = {
+  def pushSeq(writeToken: String): Flow[Seq[GTS], Future[Either[WarpException, Unit]], NotUsed] = Pusher.pushSeq(writeToken)(warpContext)
+  def push(writeToken: String): Flow[GTS, Future[Either[WarpException, Unit]], NotUsed] = Pusher.push(writeToken)(warpContext)
+  def push(gts: GTS, writeToken: String): Future[Either[WarpException, Unit]] = {
     Source
       .single(gts)
       .via(push(writeToken))
-      .runForeach(_ => ())
+      .runWith(Sink.fold[Future[Either[WarpException, Unit]], Future[Either[WarpException, Unit]]](Future.successful(Right(())))((a, b) => a.flatMap(_ => b))).flatten
   }
-  def push(gtsSeq: Seq[GTS], writeToken: String, batchSize: Int = 100): Future[Done] = {
+  def push(gtsSeq: Seq[GTS], writeToken: String, batchSize: Int = 100): Future[Either[WarpException, Unit]] = {
     Source
       .fromIterator(() => gtsSeq.grouped(batchSize))
       .via(Pusher.pushSeq(writeToken)(warpContext))
-      .runForeach(_ => ())
+      .runWith(Sink.fold[Future[Either[WarpException, Unit]], Future[Either[WarpException, Unit]]](Future.successful(Right(())))((a, b) => a.flatMap(_ => b))).flatten
   }
 
-  def exec: Flow[WarpScript, Seq[GTS], NotUsed] = Executioner.exec()(warpContext)
+  def exec: Flow[WarpScript, Seq[GTS], NotUsed] = Runner.exec()(warpContext)
   def exec(script: WarpScript): Future[Seq[GTS]] = {
     Source
       .single(script)

@@ -6,7 +6,6 @@ import scala.concurrent.duration.{Duration => Period}
 import scala.concurrent.duration.MILLISECONDS
 import scala.util.{Failure, Success}
 
-import akka.Done
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
 import akka.stream.ActorMaterializer
@@ -20,7 +19,7 @@ import org.specs2._
 
 class Warp10ClientSpec extends Specification with matcher.DisjunctionMatchers {
   def is = s2"""
-    This is a specification to check the Warp10 client on sending data
+    This is a specification to check the Warp10 client
 
     The Warp10 client should
 
@@ -32,6 +31,7 @@ class Warp10ClientSpec extends Specification with matcher.DisjunctionMatchers {
       Seq[GTS] -> on fetch success                                    $f2
 
       Unit -> on sending 3000GTS to real Warp10                       $p5
+      WarpException -> on invalid data                                $p6
   """
 
   val zonedNow = ZonedDateTime.now
@@ -74,15 +74,15 @@ class Warp10ClientSpec extends Specification with matcher.DisjunctionMatchers {
 
   val gtsPointSeq1 = Seq(GTSPoint(Some(1.toLong), None, None, GTSLongValue(73346576)))
   val validSend_f = wPushClient.push(GTS("testClass", Map.empty[String, String], gtsPointSeq1), writeToken)
-  def p1 = Await.result(validSend_f, Period(1000, MILLISECONDS)) must be_==(Done)
+  def p1 = Await.result(validSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
 
   val gtsPointSeq2 = Seq(GTSPoint(None, None, None, GTSLongValue(7)))
   val invalidTokenSend_f = wPushClient.push(GTS("testFailClass{}", Map("label1" -> "dsfF3", "label2" -> "dsfg"), gtsPointSeq2), "invalid_write_token")
-  def p2 = Await.result(invalidTokenSend_f, Period(1000, MILLISECONDS)) must throwA[WarpException]
+  def p2 = Await.result(invalidTokenSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Left[_, _]]
 
-  val gtsPointSeq3 = Seq(GTSPoint(Some(4.toLong), Some(Coordinates(1.0.toDouble, -0.1.toDouble)), Some(1.toLong), GTSStringValue("string")))
-  val fullDataFieldSend_f = wPushClient.push(GTS("testFullDataField", Map("lbl1" -> "test", "lbl2" -> "test"), gtsPointSeq3), writeToken)
-  def p4 = Await.result(fullDataFieldSend_f, Period(1000, MILLISECONDS)) must be_==(Done)
+  val gtsPointSeq4 = Seq(GTSPoint(Some(4.toLong), Some(Coordinates(1.0.toDouble, -0.1.toDouble)), Some(1.toLong), GTSStringValue("string")))
+  val fullDataFieldSend_f = wPushClient.push(GTS("testFullDataField", Map("lbl1" -> "test", "lbl2" -> "test"), gtsPointSeq4), writeToken)
+  def p4 = Await.result(fullDataFieldSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
 
 
   // FETCH TESTS
@@ -105,7 +105,7 @@ class Warp10ClientSpec extends Specification with matcher.DisjunctionMatchers {
                   |=1434590072// -0.1301889411087915""".stripMargin
               ))
             }
-            case Some(query) if query.contains("selector=fail") => Failure(new WarpException(-1, "No data for `selector=fail`."))
+            case Some(query) if query.contains("selector=fail") => Failure(new WarpException("No data for `selector=fail`."))
             case _ => Success(HttpResponse(StatusCodes.BadRequest, entity = "The request is invalid"))
           }, requestKey)
         }
@@ -136,14 +136,18 @@ class Warp10ClientSpec extends Specification with matcher.DisjunctionMatchers {
   def f2 = Await.result(validFetch_f, Period(1000, MILLISECONDS)) must be_==(realSeq)
 
   // PUSH 10 000 GTS to real Warp10
-  val warpRangedFetchClient = WarpClient("localhost", 8080)
+  val realWarpClient = WarpClient("localhost", 8080)
 
   val realSeqRangedFetch: Seq[GTS] = (1 to 3000) map { i =>
     GTS("rangedFetchTest", Map(".app" -> "test"), Seq(GTSPoint(Some(utcNowStartMicro - (i * 1L)), None, None, GTSStringValue(s"J$i"))))
   }
 
-  val validHugePush_p = warpRangedFetchClient.push(realSeqRangedFetch, writeToken)
-  def p5 = Await.result(validHugePush_p, Period(100000, MILLISECONDS)) must be_==(Done)
+  val validHugePush_p = realWarpClient.push(realSeqRangedFetch, writeToken)
+  def p5 = Await.result(validHugePush_p, Period(100000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
+
+  val gtsPointSeq6 = Seq(GTSPoint(Some(1.toLong), Some(Coordinates(lat = 3.333, lon = 4.444)), None, GTSLongValue(73346576)))
+  val invalidSend6 = realWarpClient.push(GTS("testClass", Map.empty[String, String], gtsPointSeq6), writeToken)
+  def p6 = Await.result(invalidSend6, Period(10000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
 
   //private def getNbGTSPoints(gtsSeq: Seq[GTS]): Int = gtsSeq.map(_.points.size).sum
 

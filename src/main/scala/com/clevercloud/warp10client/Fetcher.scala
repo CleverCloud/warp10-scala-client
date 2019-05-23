@@ -53,10 +53,7 @@ object Fetcher {
             Source.fromFuture(
               WarpClientUtils
                 .readAllDataBytes(httpResponse.entity.dataBytes)
-                .map(content => WarpException(
-                  httpResponse.status.intValue,
-                  content
-                ))
+                .map(content => WarpException(s"HTTP status: $httpResponse.status.intValue: $content"))
                 .map(throw _)
             )
           }
@@ -69,7 +66,7 @@ object Fetcher {
     Flow[String]
       .map {
         GTS.parse(_) match {
-          case Left(e) => println(e) ; throw WarpException(-1, "Can't parse GTS.")
+          case Left(e) => throw WarpException(s"Can't parse GTS due to: $e")
           case Right(gtsList) => gtsList
         }
       }

@@ -7,8 +7,8 @@ import scala.util.Try
 
 import akka.NotUsed
 import akka.actor.ActorSystem
+import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.HttpHeader.ParsingResult
-import akka.http.scaladsl.model.{HttpHeader, HttpRequest, HttpResponse}
 import akka.stream.ActorMaterializer
 import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
@@ -22,9 +22,7 @@ object WarpClientUtils {
   def readAllDataBytes(dataBytesSource: Source[ByteString, _])(implicit actorMaterializer: ActorMaterializer): Future[String] = {
     implicit val executionContext = actorMaterializer.system.dispatcher
     dataBytesSource
-      .runFold(ByteString.empty) {
-        case (seq, item) => seq ++ item
-      }
+      .runFold(ByteString.empty)({ case (seq, item) => seq ++ item })
       .map(_.decodeString("UTF-8"))
   }
 
@@ -46,13 +44,13 @@ case class WarpClientContext(
   implicit def implicitWarpConfiguration: WarpConfiguration = configuration
 }
 
-case class WarpException(statusCode: Long, error: String) extends Exception(error)
+case class WarpException(error: String) extends Exception(error)
 
 object `X-Warp10-Token` {
   def apply(value: String): HttpHeader = {
     HttpHeader.parse("X-Warp10-Token", value) match {
       case ParsingResult.Ok(httpHeader, _) => httpHeader
-      case ParsingResult.Error(error) => throw WarpException(-1, s"${error.summary}: ${error.detail}.")
+      case ParsingResult.Error(error) => throw WarpException(s"${error.summary}: ${error.detail}.")
     }
   }
 }
