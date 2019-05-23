@@ -57,7 +57,7 @@ object Runner {
             Source.fromFuture(
               WarpClientUtils
                 .readAllDataBytes(httpResponse.entity.dataBytes)
-                .map(content => WarpException(s"HTTP status: $httpResponse.status.intValue: $content"))
+                .map(content => WarpException(s"HTTP status: ${httpResponse.status.intValue.toString}: $content"))
                 .map(throw _)
             )
           }

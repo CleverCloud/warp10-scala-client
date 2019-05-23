@@ -76,7 +76,7 @@ object Pusher {
     } else {
       WarpClientUtils
         .readAllDataBytes(httpResponse.entity.dataBytes)
-        .map(content => Left(WarpException(s"HTTP status: $httpResponse.status.intValue: $content")))
+        .map(content => Left(WarpException(s"HTTP status: ${httpResponse.status.intValue.toString}: $content")))
     }
   }
 }
