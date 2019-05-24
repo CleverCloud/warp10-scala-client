@@ -12,7 +12,7 @@ val circeVersion = "0.9.3"
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.5.23",
-  "com.typesafe.akka" %% "akka-http" % "10.1.1",
+  "com.typesafe.akka" %% "akka-http" % "10.1.8",
   "com.typesafe.akka" %% "akka-stream" % "2.5.23",
   "com.typesafe.play" %% "play-json" % "2.6.7",
   "io.circe" %% "circe-core" % "0.10.0",
