@@ -17,7 +17,7 @@ import com.clevercloud.warp10client.models.gts_module._
 
 import org.specs2._
 
-class Warp10ClientSpec extends Specification with matcher.DisjunctionMatchers {
+class Warp10ClientSpec extends Specification {
   def is = s2"""
     This is a specification to check the Warp10 client
 
