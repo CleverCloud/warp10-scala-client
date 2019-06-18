@@ -9,6 +9,8 @@ import akka.NotUsed
 import akka.http.scaladsl.model._
 import akka.stream.scaladsl.Flow
 
+import org.apache.commons.lang3.StringEscapeUtils
+
 import com.clevercloud.warp10client.models.gts_module.GTS
 
 object Pusher {
@@ -76,7 +78,10 @@ object Pusher {
     } else {
       WarpClientUtils
         .readAllDataBytes(httpResponse.entity.dataBytes)
-        .map(content => Left(WarpException(s"HTTP status: ${httpResponse.status.intValue.toString}: $content")))
+        .map { content =>
+          val escapedContent = StringEscapeUtils.unescapeXml(content)
+          Left(WarpException(s"HTTP status: ${httpResponse.status.intValue.toString}: $escapedContent"))
+        }
     }
   }
 }
