@@ -14,11 +14,12 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.5.23",
   "com.typesafe.akka" %% "akka-http" % "10.1.8",
   "com.typesafe.akka" %% "akka-stream" % "2.5.23",
-  "com.typesafe.play" %% "play-json" % "2.7.4",
-  "io.circe" %% "circe-core" % "0.11.1",
-  "io.circe" %% "circe-generic" % "0.11.1",
-  "io.circe" %% "circe-parser" % "0.11.1",
-  "org.specs2" %% "specs2-core" % "4.5.1" % Test
+  "com.typesafe.play" %% "play-json" % "2.7.3",
+  "io.circe" %% "circe-core" % "0.10.1",
+  "io.circe" %% "circe-generic" % "0.10.1",
+  "io.circe" %% "circe-parser" % "0.10.1",
+  "org.apache.commons" % "commons-lang3" % "3.9",
+  "org.specs2" %% "specs2-core" % "3.10.0" % Test
 )
 
 bintrayOrganization := Some("clevercloud")
