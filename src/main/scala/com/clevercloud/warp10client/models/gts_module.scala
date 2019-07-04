@@ -146,6 +146,17 @@ object gts_module {
       GTSPoint(Some(utcMicro), coordinates, elev, value)
     }
 
+    def apply(
+      ts: LocalDateTime,
+      coordinates: Option[Coordinates],
+      elev: Option[Long],
+      value: GTSValue
+    ): GTSPoint = {
+      val utcMilli = ts.toInstant(ZoneOffset.UTC).toEpochMilli
+      val utcMicro = s"${utcMilli}000".toLong
+      GTSPoint(Some(utcMicro), coordinates, elev, value)
+    }
+
     private val gtsPointRegex = "([^/]*)/([^/]*:[^/]*)?/(.*)? (.*)".r
 
     def parse(input: String): Either[InvalidGTSPointFormat, GTSPoint] = {
