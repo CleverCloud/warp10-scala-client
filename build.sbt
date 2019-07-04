@@ -8,8 +8,6 @@ scalaVersion := "2.12.8"
 
 crossScalaVersions := Seq("2.12.8")
 
-val circeVersion = "0.9.3"
-
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.5.23",
   "com.typesafe.akka" %% "akka-http" % "10.1.8",
