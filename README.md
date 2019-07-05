@@ -30,11 +30,6 @@ implicit val executionContext = system.dispatchers.lookup("yourContext")
 implicit val actorMaterializer = ActorMaterializer()
 implicit val warpConfiguration = WarpConfiguration("www.clever-cloud.com")
 val warpClient = WarpClient("clever-cloud.com", 80)
-
-val labels = Map(
-  "exactLabel=" -> "label1",
-  "regexLabel~" -> "lab.*"
-)
 ```
 
 ## Classical usage
