@@ -44,3 +44,7 @@ scalacOptions ++= Seq(
 parallelExecution in Test := false
 
 licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
+
+enablePlugins(GhpagesPlugin)
+
+git.remoteRepo := "git@github.com:clevercloud/akka-warp10-scala-client.git"
