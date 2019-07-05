@@ -4,6 +4,20 @@ master: [![Build Status](https://travis-ci.org/CleverCloud/akka-warp10-scala-cli
 
 It is based on AKKA Stream.
 
+## Use it
+
+First, add this resolver to your `build.sbt`.
+
+```scala
+"clevercloud-bintray" at "http://dl.bintray.com/clevercloud/maven",
+```
+
+Second, add the library dependency:
+
+```scala
+"com.clevercloud" %% "akka-warp10-scala-client" % "1.3.0"
+```
+
 ## Configuration
 
 ```scala
