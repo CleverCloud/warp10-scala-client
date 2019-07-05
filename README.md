@@ -35,6 +35,11 @@ val warpClient = WarpClient("clever-cloud.com", 80)
 ## Classical usage
 
 ```scala
+val labels = Map(
+  "exactLabel=" -> "label1",
+  "regexLabel~" -> "lab.*"
+)
+
 warpClient.fetch(
   "READ_TOKEN",
   Query(
