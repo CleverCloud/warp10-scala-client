@@ -2,6 +2,8 @@
 
 # Scala client for [Warp10 Geo/time series DB](http://www.warp10.io/).
 
+Scaladoc is available [here](https://clevercloud.github.io/akka-warp10-scala-client/latest/api/index.html).
+
 ## Use it
 
 First, add this resolver to your `build.sbt`.
