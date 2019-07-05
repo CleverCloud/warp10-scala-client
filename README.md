@@ -42,7 +42,7 @@ warpClient.fetch(
     FetchRange(LocalDateTime.now.minusSeconds(100), LocalDateTime.now)
   )
 ).map { gts =>
-  println(Json.toJson(gts)) // using play-json writers
+  ...
 }
 
 warpClient.exec(s"""
