@@ -1,8 +1,6 @@
 [![Build Status](https://travis-ci.org/CleverCloud/akka-warp10-scala-client.svg?branch=master)](https://travis-ci.org/CleverCloud/akka-warp10-scala-client) [![Bintray Version](https://img.shields.io/bintray/v/clevercloud/maven/akka-warp10-scala-client.svg)](https://bintray.com/clevercloud/maven/akka-warp10-scala-client#)
 
-# This is a scala client for [Warp10 Geo/time series DB](http://www.warp10.io/)
-
-It is based on AKKA Stream.
+# Scala client for [Warp10 Geo/time series DB](http://www.warp10.io/).
 
 ## Use it
 
