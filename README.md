@@ -15,7 +15,7 @@ First, add this resolver to your `build.sbt`.
 Second, add the library dependency:
 
 ```scala
-"com.clevercloud" %% "akka-warp10-scala-client" % "1.3.0"
+"com.clevercloud" %% "akka-warp10-scala-client" % "<version>"
 ```
 
 ## Configuration
