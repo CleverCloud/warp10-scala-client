@@ -130,10 +130,10 @@ class Warp10ClientSpec extends Specification {
   )
 
   val failFetch_f = wFetchClient.fetch(readToken, Query(Selector("fail"), FetchRange(utcNow, 1000.toLong)))
-  def f1 = Await.result(failFetch_f, Period(1000, MILLISECONDS)) must throwA[WarpException]
+  def f1 = Await.result(failFetch_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Left[_, _]]
 
   val validFetch_f = wFetchClient.fetch(readToken, Query(Selector("test"), FetchRange(utcNow, 1000.toLong)))
-  def f2 = Await.result(validFetch_f, Period(1000, MILLISECONDS)) must be_==(realSeq)
+  def f2 = Await.result(validFetch_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
 
   // PUSH 10 000 GTS to real Warp10
   val realWarpClient = WarpClient("localhost", 8080)
