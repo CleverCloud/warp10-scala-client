@@ -2,7 +2,15 @@
 
 # Scala client for [Warp10 Geo/time series DB](http://www.warp10.io/).
 
+
+## Documentation
+
 Scaladoc is available [here](https://clevercloud.github.io/akka-warp10-scala-client/latest/api/index.html).
+
+```scala
+// to generate documentation on gh-pages branch
+sbt ghpagesPushSite
+```
 
 ## Use it
 
