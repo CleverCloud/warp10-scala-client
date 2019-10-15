@@ -43,7 +43,7 @@ scalacOptions ++= Seq(
 
 parallelExecution in Test := false
 
-licenses += ("Apache-2.0", url("http://www.apache.org/licenses/LICENSE-2.0"))
+licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))
 
 enablePlugins(GhpagesPlugin)
 
