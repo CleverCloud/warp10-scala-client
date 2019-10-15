@@ -17,7 +17,7 @@ sbt ghpagesPushSite
 First, add this resolver to your `build.sbt`.
 
 ```scala
-"clevercloud-bintray" at "http://dl.bintray.com/clevercloud/maven",
+"clevercloud-bintray" at "https://dl.bintray.com/clevercloud/maven",
 ```
 
 Second, add the library dependency:
