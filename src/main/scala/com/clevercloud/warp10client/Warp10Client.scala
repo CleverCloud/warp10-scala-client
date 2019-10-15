@@ -48,12 +48,12 @@ object WarpClient {
 class WarpClient(warpContext: WarpClientContext) {
   import warpContext._
 
-  def fetch(readToken: String): Flow[Query[FetchRange], Seq[GTS], NotUsed] = Fetcher.fetch(readToken)(warpContext)
-  def fetch(readToken: String, query: Query[FetchRange]): Future[Seq[GTS]] = {
+  def fetch(readToken: String): Flow[Query[FetchRange], Future[Either[WarpException, Seq[GTS]]], NotUsed] = Fetcher.fetch(readToken)(warpContext)
+  def fetch(readToken: String, query: Query[FetchRange]): Future[Either[WarpException, Seq[GTS]]] = {
     Source
       .single(query)
       .via(fetch(readToken))
-      .runWith(Sink.head)
+      .runWith(Sink.fold[Future[Either[WarpException, Seq[GTS]]], Future[Either[WarpException, Seq[GTS]]]](Future.successful(Right(Seq.empty[GTS])))((a, b) => a.flatMap(_ => b))).flatten
   }
 
   def pushSeq(writeToken: String): Flow[Seq[GTS], Future[Either[WarpException, Unit]], NotUsed] = Pusher.pushSeq(writeToken)(warpContext)
