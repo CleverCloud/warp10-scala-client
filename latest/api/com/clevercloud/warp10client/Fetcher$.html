@@ -371,9 +371,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="com.clevercloud.warp10client.Fetcher#fetch" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="fetch(readToken:String)(implicitwarpClientContext:com.clevercloud.warp10client.WarpClientContext):akka.stream.scaladsl.Flow[com.clevercloud.warp10client.models.Query[com.clevercloud.warp10client.models.FetchRange],Seq[com.clevercloud.warp10client.models.gts_module.GTS],akka.NotUsed]"></a><a id="fetch(String)(WarpClientContext):Flow[Query[FetchRange],Seq[GTS],NotUsed]"></a>
+      <a id="fetch(readToken:String)(implicitwarpClientContext:com.clevercloud.warp10client.WarpClientContext):akka.stream.scaladsl.Flow[com.clevercloud.warp10client.models.Query[com.clevercloud.warp10client.models.FetchRange],scala.concurrent.Future[Either[com.clevercloud.warp10client.WarpException,Seq[com.clevercloud.warp10client.models.gts_module.GTS]]],akka.NotUsed]"></a><a id="fetch(String)(WarpClientContext):Flow[Query[FetchRange],Future[Either[WarpException,Seq[GTS]]],NotUsed]"></a>
       <span class="permalink">
-      <a href="../../../com/clevercloud/warp10client/Fetcher$.html#fetch(readToken:String)(implicitwarpClientContext:com.clevercloud.warp10client.WarpClientContext):akka.stream.scaladsl.Flow[com.clevercloud.warp10client.models.Query[com.clevercloud.warp10client.models.FetchRange],Seq[com.clevercloud.warp10client.models.gts_module.GTS],akka.NotUsed]" title="Permalink">
+      <a href="../../../com/clevercloud/warp10client/Fetcher$.html#fetch(readToken:String)(implicitwarpClientContext:com.clevercloud.warp10client.WarpClientContext):akka.stream.scaladsl.Flow[com.clevercloud.warp10client.models.Query[com.clevercloud.warp10client.models.FetchRange],scala.concurrent.Future[Either[com.clevercloud.warp10client.WarpException,Seq[com.clevercloud.warp10client.models.gts_module.GTS]]],akka.NotUsed]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -382,7 +382,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">fetch</span><span class="params">(<span name="readToken">readToken: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="warpClientContext">warpClientContext: <a href="WarpClientContext.html" class="extype" name="com.clevercloud.warp10client.WarpClientContext">WarpClientContext</a></span>)</span><span class="result">: <span class="extype" name="akka.stream.scaladsl.Flow">Flow</span>[<a href="models/Query.html" class="extype" name="com.clevercloud.warp10client.models.Query">Query</a>[<a href="models/FetchRange.html" class="extype" name="com.clevercloud.warp10client.models.FetchRange">FetchRange</a>], <span class="extype" name="scala.Seq">Seq</span>[<a href="models/gts_module$$GTS.html" class="extype" name="com.clevercloud.warp10client.models.gts_module.GTS">GTS</a>], <span class="extype" name="akka.NotUsed">NotUsed</span>]</span>
+        <span class="name">fetch</span><span class="params">(<span name="readToken">readToken: <span class="extype" name="scala.Predef.String">String</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="warpClientContext">warpClientContext: <a href="WarpClientContext.html" class="extype" name="com.clevercloud.warp10client.WarpClientContext">WarpClientContext</a></span>)</span><span class="result">: <span class="extype" name="akka.stream.scaladsl.Flow">Flow</span>[<a href="models/Query.html" class="extype" name="com.clevercloud.warp10client.models.Query">Query</a>[<a href="models/FetchRange.html" class="extype" name="com.clevercloud.warp10client.models.FetchRange">FetchRange</a>], <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Either">Either</span>[<a href="WarpException.html" class="extype" name="com.clevercloud.warp10client.WarpException">WarpException</a>, <span class="extype" name="scala.Seq">Seq</span>[<a href="models/gts_module$$GTS.html" class="extype" name="com.clevercloud.warp10client.models.gts_module.GTS">GTS</a>]]], <span class="extype" name="akka.NotUsed">NotUsed</span>]</span>
       </span>
       
       
@@ -532,10 +532,10 @@
                 <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
-    </li><li name="com.clevercloud.warp10client.Fetcher#processResponseTry" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="processResponseTry(implicitwarpClientContext:com.clevercloud.warp10client.WarpClientContext):akka.stream.scaladsl.Flow[scala.util.Try[akka.http.scaladsl.model.HttpResponse],String,akka.NotUsed]"></a><a id="processResponseTry(WarpClientContext):Flow[Try[HttpResponse],String,NotUsed]"></a>
+    </li><li name="com.clevercloud.warp10client.Fetcher#processResponse" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
+      <a id="processResponse(httpResponse:akka.http.scaladsl.model.HttpResponse)(implicitwarpClientContext:com.clevercloud.warp10client.WarpClientContext):scala.concurrent.Future[Either[com.clevercloud.warp10client.WarpException,List[com.clevercloud.warp10client.models.gts_module.GTS]]]"></a><a id="processResponse(HttpResponse)(WarpClientContext):Future[Either[WarpException,List[GTS]]]"></a>
       <span class="permalink">
-      <a href="../../../com/clevercloud/warp10client/Fetcher$.html#processResponseTry(implicitwarpClientContext:com.clevercloud.warp10client.WarpClientContext):akka.stream.scaladsl.Flow[scala.util.Try[akka.http.scaladsl.model.HttpResponse],String,akka.NotUsed]" title="Permalink">
+      <a href="../../../com/clevercloud/warp10client/Fetcher$.html#processResponse(httpResponse:akka.http.scaladsl.model.HttpResponse)(implicitwarpClientContext:com.clevercloud.warp10client.WarpClientContext):scala.concurrent.Future[Either[com.clevercloud.warp10client.WarpException,List[com.clevercloud.warp10client.models.gts_module.GTS]]]" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -544,7 +544,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">processResponseTry</span><span class="params">(<span class="implicit">implicit </span><span name="warpClientContext">warpClientContext: <a href="WarpClientContext.html" class="extype" name="com.clevercloud.warp10client.WarpClientContext">WarpClientContext</a></span>)</span><span class="result">: <span class="extype" name="akka.stream.scaladsl.Flow">Flow</span>[<span class="extype" name="scala.util.Try">Try</span>[<span class="extype" name="akka.http.scaladsl.model.HttpResponse">HttpResponse</span>], <span class="extype" name="scala.Predef.String">String</span>, <span class="extype" name="akka.NotUsed">NotUsed</span>]</span>
+        <span class="name">processResponse</span><span class="params">(<span name="httpResponse">httpResponse: <span class="extype" name="akka.http.scaladsl.model.HttpResponse">HttpResponse</span></span>)</span><span class="params">(<span class="implicit">implicit </span><span name="warpClientContext">warpClientContext: <a href="WarpClientContext.html" class="extype" name="com.clevercloud.warp10client.WarpClientContext">WarpClientContext</a></span>)</span><span class="result">: <span class="extype" name="scala.concurrent.Future">Future</span>[<span class="extype" name="scala.Either">Either</span>[<a href="WarpException.html" class="extype" name="com.clevercloud.warp10client.WarpException">WarpException</a>, <span class="extype" name="scala.List">List</span>[<a href="models/gts_module$$GTS.html" class="extype" name="com.clevercloud.warp10client.models.gts_module.GTS">GTS</a>]]]</span>
       </span>
       
       
