@@ -9,9 +9,9 @@ scalaVersion := "2.12.8"
 crossScalaVersions := Seq("2.12.8")
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.5.26",
+  "com.typesafe.akka" %% "akka-actor" % "2.6.0",
   "com.typesafe.akka" %% "akka-http" % "10.1.10",
-  "com.typesafe.akka" %% "akka-stream" % "2.5.26",
+  "com.typesafe.akka" %% "akka-stream" % "2.6.0",
   "com.typesafe.play" %% "play-json" % "2.7.3",
   "io.circe" %% "circe-core" % "0.12.3",
   "io.circe" %% "circe-generic" % "0.12.3",
