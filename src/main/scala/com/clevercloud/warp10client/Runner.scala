@@ -49,12 +49,12 @@ object Runner {
       .flatMapConcat {
         case Success(httpResponse) => {
           if (httpResponse.status == StatusCodes.OK) {
-            Source.fromFuture(
+            Source.future(
               WarpClientUtils
                 .readAllDataBytes(httpResponse.entity.dataBytes)
             )
           } else {
-            Source.fromFuture(
+            Source.future(
               WarpClientUtils
                 .readAllDataBytes(httpResponse.entity.dataBytes)
                 .map(content => WarpException(s"HTTP status: ${httpResponse.status.intValue.toString}: $content"))
@@ -82,8 +82,8 @@ object Runner {
       .map { json => json.hcursor.downArray } // warp response contains [[]] or [{}] so we drop an array level
       .map { array => // global array with all matching script
         array.values.getOrElse(throw WarpException(s"No data to parse.")).map { series => // http://www.warp10.io/apis/gts-output-format/
-          val `class` = series.hcursor.getOrElse[String]("c")("").right.getOrElse(throw WarpException( "Can't parse `class` value."))
-          val labels = series.hcursor.getOrElse[Map[String, String]]("l")(Map.empty[String, String]).right.getOrElse(throw WarpException("Cant parse `labels` value."))
+          val `class` = series.hcursor.getOrElse[String]("c")("").getOrElse(throw WarpException( "Can't parse `class` value."))
+          val labels = series.hcursor.getOrElse[Map[String, String]]("l")(Map.empty[String, String]).getOrElse(throw WarpException("Cant parse `labels` value."))
           GTS(
             classname = `class`,
             labels = labels,

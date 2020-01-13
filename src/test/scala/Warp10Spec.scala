@@ -8,7 +8,7 @@ import scala.util.{Failure, Success}
 
 import akka.actor.ActorSystem
 import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
-import akka.stream.ActorMaterializer
+import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 
 import com.clevercloud.warp10client._
@@ -43,11 +43,11 @@ class Warp10ClientSpec extends Specification {
 
   implicit val actorSystem = ActorSystem()
   implicit val executionContext = actorSystem.dispatcher
-  implicit val actorMaterializer = ActorMaterializer()
+  implicit val actorMaterializer = Materializer.createMaterializer(actorSystem)
   implicit val warpConfiguration: WarpConfiguration = WarpConfiguration("http://localhost:8080")
 
   // PUSH TESTS
-  private def pushContext()(implicit actorSystem: ActorSystem, actorMaterializer: ActorMaterializer, executionContext: ExecutionContext) = {
+  private def pushContext()(implicit actorMaterializer: Materializer, executionContext: ExecutionContext) = {
     WarpClientContext(
       poolClientFlow = {
         Flow[(HttpRequest, UUID)].mapAsync(1) {
@@ -86,7 +86,7 @@ class Warp10ClientSpec extends Specification {
 
 
   // FETCH TESTS
-  private def fetchContext()(implicit actorSystem: ActorSystem, actorMaterializer: ActorMaterializer, executionContext: ExecutionContext) = {
+  private def fetchContext()(implicit actorMaterializer: Materializer) = {
     WarpClientContext(
       poolClientFlow = Flow[(HttpRequest, UUID)].map {
         case (httpRequest, requestKey) => {

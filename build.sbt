@@ -4,20 +4,20 @@ name := """akka-warp10-scala-client"""
 
 version := "1.4.1-SNAPSHOT"
 
-scalaVersion := "2.12.8"
+scalaVersion := "2.12.10"
 
-crossScalaVersions := Seq("2.12.8")
+crossScalaVersions := Seq("2.12.10", "2.13.1")
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.5.26",
+  "com.typesafe.akka" %% "akka-actor" % "2.6.1",
   "com.typesafe.akka" %% "akka-http" % "10.1.10",
-  "com.typesafe.akka" %% "akka-stream" % "2.5.26",
-  "com.typesafe.play" %% "play-json" % "2.7.3",
+  "com.typesafe.akka" %% "akka-stream" % "2.6.1",
+  "com.typesafe.play" %% "play-json" % "2.7.4",
   "io.circe" %% "circe-core" % "0.12.3",
   "io.circe" %% "circe-generic" % "0.12.3",
   "io.circe" %% "circe-parser" % "0.12.3",
   "org.apache.commons" % "commons-lang3" % "3.9",
-  "org.specs2" %% "specs2-core" % "4.8.3" % Test
+  "org.specs2" %% "specs2-core" % "4.8.1" % Test
 )
 
 bintrayOrganization := Some("clevercloud")
@@ -28,16 +28,6 @@ scalacOptions ++= Seq(
   "-unchecked",
   "-Xlint",
   "-Xcheckinit",
-  "-Ywarn-adapted-args",
-  "-Ywarn-dead-code",
-  "-Ywarn-inaccessible",
-  "-Ywarn-dead-code",
-  "-Ywarn-nullary-override",
-  "-Ywarn-nullary-unit",
-  "-Ywarn-numeric-widen",
-  "-Ywarn-unused",
-  "-Ywarn-unused-import",
-  "-Ywarn-value-discard",
   "-language:postfixOps"
 )
 
