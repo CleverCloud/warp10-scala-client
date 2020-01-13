@@ -2,24 +2,23 @@ package com.clevercloud.warp10client
 
 import java.util.UUID
 
-import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Try
-
 import akka.NotUsed
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.HttpHeader.ParsingResult
-import akka.stream.ActorMaterializer
+import akka.http.scaladsl.model._
+import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Source}
 import akka.util.ByteString
-
-import com.clevercloud.warp10client.models.WarpConfiguration
 import com.clevercloud.warp10client.WarpClientUtils.PoolClientFlow
+import com.clevercloud.warp10client.models.WarpConfiguration
+
+import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Try
 
 object WarpClientUtils {
   type PoolClientFlow = Flow[(HttpRequest, UUID), (Try[HttpResponse], UUID), _]
 
-  def readAllDataBytes(dataBytesSource: Source[ByteString, _])(implicit actorMaterializer: ActorMaterializer): Future[String] = {
+  def readAllDataBytes(dataBytesSource: Source[ByteString, _])(implicit actorMaterializer: Materializer): Future[String] = {
     implicit val executionContext = actorMaterializer.system.dispatcher
     dataBytesSource
       .runFold(ByteString.empty)({ case (seq, item) => seq ++ item })
@@ -35,9 +34,9 @@ object WarpClientUtils {
 case class WarpClientContext(
   configuration: WarpConfiguration,
   poolClientFlow: WarpClientUtils.PoolClientFlow,
-  actorMaterializer: ActorMaterializer
+  actorMaterializer: Materializer
 ) {
-  implicit def implicitActorMaterializer: ActorMaterializer = actorMaterializer
+  implicit def implicitActorMaterializer: Materializer = actorMaterializer
   implicit def implicitActorSystem: ActorSystem = actorMaterializer.system
   implicit def implicitExecutionContext: ExecutionContext = actorMaterializer.system.dispatcher
   implicit def implicitPoolClientFlow: PoolClientFlow = poolClientFlow
