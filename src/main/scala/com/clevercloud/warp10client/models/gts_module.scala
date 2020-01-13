@@ -56,7 +56,7 @@ object gts_module {
     points: Seq[GTSPoint]
   ) {
     def toSelector: String = s"~$classname{${labels.map { case (key,value) => s"$key=$value" }.mkString(",")}}"
-    def serialize: String = points.map(_.serializeWith(classname, labels)).toList.mkString("\n=")
+    def serialize: String = (Seq(points.head.serializeWith(classname, labels)) ++ points.drop(1).map(point => point.serializeWithoutMetadata())).mkString("\n=")
     def filter(maxDate: Long): GTS = {
       val filteredPoints: Seq[GTSPoint] = points.filter(_.ts.isDefined).filter(_.ts.get >= maxDate)
       this.copy(points = filteredPoints)
@@ -95,7 +95,7 @@ object gts_module {
               unparsedGTSPointList
                 .drop(1) // drop first point which is already parsed
                 .map(GTSPoint.parse)
-                .foldRight(Right(Nil): Either[InvalidGTSFormat, List[GTSPoint]])((e, acc) => for (xs <- acc.right; x <- e.right) yield x :: xs) match {
+                .foldRight(Right(Nil): Either[InvalidGTSFormat, List[GTSPoint]])((e, acc) => for (xs <- acc; x <- e) yield x :: xs) match {
                   case Left(e) => Left(e)
                   case Right(points) => Right(GTS(classname = classname, labels = labels, points = firstPoint :: points))
                 }
@@ -125,6 +125,7 @@ object gts_module {
     value: GTSValue
   ) {
     def serializeWith(classname: String, labels: Map[String, String]): String = s"$serializeTs/$serializeCoordinates/$serializeElev ${serializeclassname(classname)}${serializeLabels(labels)} $serializeValue"
+    def serializeWithoutMetadata(): String = s"$serializeTs/$serializeCoordinates/$serializeElev $serializeValue"
     private def serializeTs = ts.map(_.toString).getOrElse("")
     private def serializeCoordinates = coordinates.map(_.serialize).getOrElse("")
     private def serializeElev = elev.map(_.toString).getOrElse("")
