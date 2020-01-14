@@ -30,14 +30,14 @@ Second, add the library dependency:
 
 ```scala
 import akka.actor._
-import akka.stream.ActorMaterializer
+import akka.stream.Materializer
 
 import com.clevercloud.warp10client._
 import com.clevercloud.warp10client.models._
 import com.clevercloud.warp10client.models.gts_module._
 
 implicit val executionContext = system.dispatchers.lookup("yourContext")
-implicit val actorMaterializer = ActorMaterializer()
+implicit val actorMaterializer = Materializer.matFromSystem
 implicit val warpConfiguration = WarpConfiguration("www.clever-cloud.com")
 val warpClient = WarpClient("clever-cloud.com", 80)
 ```
