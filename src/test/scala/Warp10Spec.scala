@@ -43,7 +43,7 @@ class Warp10ClientSpec extends Specification {
 
   implicit val actorSystem = ActorSystem()
   implicit val executionContext = actorSystem.dispatcher
-  implicit val actorMaterializer = Materializer.createMaterializer(actorSystem)
+  implicit val actorMaterializer = Materializer.matFromSystem
   implicit val warpConfiguration: WarpConfiguration = WarpConfiguration("http://localhost:8080")
 
   // PUSH TESTS
