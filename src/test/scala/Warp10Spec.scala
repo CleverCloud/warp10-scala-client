@@ -38,8 +38,8 @@ class Warp10ClientSpec extends Specification {
   val utcNow = LocalDateTime.ofInstant(zonedNow.toInstant, ZoneId.of("UTC"))
   val utcNowMilli = utcNow.atZone(ZoneId.of("UTC")).toInstant.toEpochMilli
   val utcNowStartMicro = s"${utcNowMilli}000".toLong
-  val writeToken = "WRITE"
-  val readToken = "READ"
+  val writeToken = "writeTokenCI"
+  val readToken = "readTokenCI"
 
   implicit val actorSystem = ActorSystem()
   implicit val executionContext = actorSystem.dispatcher
