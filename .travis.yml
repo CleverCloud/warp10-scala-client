@@ -4,9 +4,10 @@ language: scala
 
 scala:
   - 2.12.8
+  - 2.13.1
 
 env:
-  - DOCKERTAG=1.2.5-rc6-ci
+  - DOCKERTAG=2.3.0
 
 services:
   - docker
