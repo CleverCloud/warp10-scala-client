@@ -8,17 +8,17 @@
           <meta name="keywords" content="" />
           <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
           
+      
       <link href="../../../lib/index.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../../../lib/template.css" media="screen" type="text/css" rel="stylesheet" />
       <link href="../../../lib/diagrams.css" media="screen" type="text/css" rel="stylesheet" id="diagrams-css" />
-      <script type="text/javascript" src="../../../lib/jquery.js"></script>
+      <script type="text/javascript" src="../../../lib/jquery.min.js"></script>
       <script type="text/javascript" src="../../../lib/jquery.panzoom.min.js"></script>
       <script type="text/javascript" src="../../../lib/jquery.mousewheel.min.js"></script>
       <script type="text/javascript" src="../../../lib/index.js"></script>
       <script type="text/javascript" src="../../../index.js"></script>
       <script type="text/javascript" src="../../../lib/scheduler.js"></script>
       <script type="text/javascript" src="../../../lib/template.js"></script>
-      <script type="text/javascript" src="../../../lib/tools.tooltip.js"></script>
       
       <script type="text/javascript">
         /* this variable can be used by the JS to determine the path to the root document */
@@ -56,7 +56,7 @@
                 <li name="_root_.root" visbl="pub" class="indented0 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="_root_"></a><a id="root:_root_"></a>
       <span class="permalink">
-      <a href="index.html#_root_" title="Permalink">
+      <a href="../../../index.html" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -72,7 +72,7 @@
     </li><li name="_root_.com" visbl="pub" class="indented1 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="com"></a><a id="com:com"></a>
       <span class="permalink">
-      <a href="index.html#com" title="Permalink">
+      <a href="../../../com/index.html" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -88,7 +88,7 @@
     </li><li name="com.clevercloud" visbl="pub" class="indented2 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="clevercloud"></a><a id="clevercloud:clevercloud"></a>
       <span class="permalink">
-      <a href="../com/index.html#clevercloud" title="Permalink">
+      <a href="../../../com/clevercloud/index.html" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -104,7 +104,7 @@
     </li><li name="com.clevercloud.warp10client" visbl="pub" class="indented3 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="warp10client"></a><a id="warp10client:warp10client"></a>
       <span class="permalink">
-      <a href="../../com/clevercloud/index.html#warp10client" title="Permalink">
+      <a href="../../../com/clevercloud/warp10client/index.html" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -120,7 +120,7 @@
     </li><li name="com.clevercloud.warp10client.models" visbl="pub" class="indented4 " data-isabs="false" fullComment="yes" group="Ungrouped">
       <a id="models"></a><a id="models:models"></a>
       <span class="permalink">
-      <a href="../../../com/clevercloud/warp10client/index.html#models" title="Permalink">
+      <a href="../../../com/clevercloud/warp10client/models/index.html" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -188,7 +188,7 @@
         <span class="kind">case class</span>
       </span>
       <span class="symbol">
-        <span class="name">WarpClientContext</span><span class="params">(<span name="configuration">configuration: <a href="models/WarpConfiguration.html" class="extype" name="com.clevercloud.warp10client.models.WarpConfiguration">WarpConfiguration</a></span>, <span name="poolClientFlow">poolClientFlow: <a href="WarpClientUtils$.html#PoolClientFlow=akka.stream.scaladsl.Flow[(akka.http.scaladsl.model.HttpRequest,java.util.UUID),(scala.util.Try[akka.http.scaladsl.model.HttpResponse],java.util.UUID),_]" class="extmbr" name="com.clevercloud.warp10client.WarpClientUtils.PoolClientFlow">PoolClientFlow</a></span>, <span name="actorMaterializer">actorMaterializer: <span class="extype" name="akka.stream.ActorMaterializer">ActorMaterializer</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
+        <span class="name">WarpClientContext</span><span class="params">(<span name="configuration">configuration: <a href="models/WarpConfiguration.html" class="extype" name="com.clevercloud.warp10client.models.WarpConfiguration">WarpConfiguration</a></span>, <span name="poolClientFlow">poolClientFlow: <a href="WarpClientUtils$.html#PoolClientFlow=akka.stream.scaladsl.Flow[(akka.http.scaladsl.model.HttpRequest,java.util.UUID),(scala.util.Try[akka.http.scaladsl.model.HttpResponse],java.util.UUID),_]" class="extmbr" name="com.clevercloud.warp10client.WarpClientUtils.PoolClientFlow">PoolClientFlow</a></span>, <span name="actorMaterializer">actorMaterializer: <span class="extype" name="akka.stream.Materializer">Materializer</span></span>)</span><span class="result"> extends <span class="extype" name="scala.Product">Product</span> with <span class="extype" name="scala.Serializable">Serializable</span></span>
       </span>
       </h4>
 
@@ -244,9 +244,9 @@
         <div id="constructors" class="members">
               <h3>Instance Constructors</h3>
               <ol><li name="com.clevercloud.warp10client.WarpClientContext#&lt;init&gt;" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="&lt;init&gt;(configuration:com.clevercloud.warp10client.models.WarpConfiguration,poolClientFlow:com.clevercloud.warp10client.WarpClientUtils.PoolClientFlow,actorMaterializer:akka.stream.ActorMaterializer):com.clevercloud.warp10client.WarpClientContext"></a><a id="&lt;init&gt;:WarpClientContext"></a>
+      <a id="&lt;init&gt;(configuration:com.clevercloud.warp10client.models.WarpConfiguration,poolClientFlow:com.clevercloud.warp10client.WarpClientUtils.PoolClientFlow,actorMaterializer:akka.stream.Materializer):com.clevercloud.warp10client.WarpClientContext"></a><a id="&lt;init&gt;:WarpClientContext"></a>
       <span class="permalink">
-      <a href="../../../com/clevercloud/warp10client/WarpClientContext.html#&lt;init&gt;(configuration:com.clevercloud.warp10client.models.WarpConfiguration,poolClientFlow:com.clevercloud.warp10client.WarpClientUtils.PoolClientFlow,actorMaterializer:akka.stream.ActorMaterializer):com.clevercloud.warp10client.WarpClientContext" title="Permalink">
+      <a href="../../../com/clevercloud/warp10client/WarpClientContext.html#&lt;init&gt;(configuration:com.clevercloud.warp10client.models.WarpConfiguration,poolClientFlow:com.clevercloud.warp10client.WarpClientUtils.PoolClientFlow,actorMaterializer:akka.stream.Materializer):com.clevercloud.warp10client.WarpClientContext" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -255,7 +255,7 @@
         <span class="kind">new</span>
       </span>
       <span class="symbol">
-        <span class="name">WarpClientContext</span><span class="params">(<span name="configuration">configuration: <a href="models/WarpConfiguration.html" class="extype" name="com.clevercloud.warp10client.models.WarpConfiguration">WarpConfiguration</a></span>, <span name="poolClientFlow">poolClientFlow: <a href="WarpClientUtils$.html#PoolClientFlow=akka.stream.scaladsl.Flow[(akka.http.scaladsl.model.HttpRequest,java.util.UUID),(scala.util.Try[akka.http.scaladsl.model.HttpResponse],java.util.UUID),_]" class="extmbr" name="com.clevercloud.warp10client.WarpClientUtils.PoolClientFlow">PoolClientFlow</a></span>, <span name="actorMaterializer">actorMaterializer: <span class="extype" name="akka.stream.ActorMaterializer">ActorMaterializer</span></span>)</span>
+        <span class="name">WarpClientContext</span><span class="params">(<span name="configuration">configuration: <a href="models/WarpConfiguration.html" class="extype" name="com.clevercloud.warp10client.models.WarpConfiguration">WarpConfiguration</a></span>, <span name="poolClientFlow">poolClientFlow: <a href="WarpClientUtils$.html#PoolClientFlow=akka.stream.scaladsl.Flow[(akka.http.scaladsl.model.HttpRequest,java.util.UUID),(scala.util.Try[akka.http.scaladsl.model.HttpResponse],java.util.UUID),_]" class="extmbr" name="com.clevercloud.warp10client.WarpClientUtils.PoolClientFlow">PoolClientFlow</a></span>, <span name="actorMaterializer">actorMaterializer: <span class="extype" name="akka.stream.Materializer">Materializer</span></span>)</span>
       </span>
       
       
@@ -318,9 +318,9 @@
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef → Any</dd></dl></div>
     </li><li name="com.clevercloud.warp10client.WarpClientContext#actorMaterializer" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="actorMaterializer:akka.stream.ActorMaterializer"></a><a id="actorMaterializer:ActorMaterializer"></a>
+      <a id="actorMaterializer:akka.stream.Materializer"></a><a id="actorMaterializer:Materializer"></a>
       <span class="permalink">
-      <a href="../../../com/clevercloud/warp10client/WarpClientContext.html#actorMaterializer:akka.stream.ActorMaterializer" title="Permalink">
+      <a href="../../../com/clevercloud/warp10client/WarpClientContext.html#actorMaterializer:akka.stream.Materializer" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -329,7 +329,7 @@
         <span class="kind">val</span>
       </span>
       <span class="symbol">
-        <span class="name">actorMaterializer</span><span class="result">: <span class="extype" name="akka.stream.ActorMaterializer">ActorMaterializer</span></span>
+        <span class="name">actorMaterializer</span><span class="result">: <span class="extype" name="akka.stream.Materializer">Materializer</span></span>
       </span>
       
       
@@ -364,13 +364,13 @@
         <span class="name">clone</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.AnyRef">AnyRef</span></span>
       </span>
       
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../java/lang/index.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@native</span><span class="args">()</span>
-              
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
       <span class="defval" name="classOf[java.lang.CloneNotSupportedException]">...</span>
     </span>)</span>
+              
+                <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
     </li><li name="com.clevercloud.warp10client.WarpClientContext#configuration" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
@@ -420,7 +420,7 @@
         <span class="name">finalize</span><span class="params">()</span><span class="result">: <span class="extype" name="scala.Unit">Unit</span></span>
       </span>
       
-      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<a href="../../../java/lang/index.html" class="extype" name="java.lang">java.lang</a>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
+      <div class="fullcomment"><dl class="attributes block"> <dt>Attributes</dt><dd>protected[<span class="extype" name="java.lang">lang</span>] </dd><dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
                 <span class="name">@throws</span><span class="args">(<span>
       
       <span class="symbol">classOf[java.lang.Throwable]</span>
@@ -447,9 +447,9 @@
               
         </dd></dl></div>
     </li><li name="com.clevercloud.warp10client.WarpClientContext#implicitActorMaterializer" visbl="pub" class="indented0 " data-isabs="false" fullComment="no" group="Ungrouped">
-      <a id="implicitActorMaterializer:akka.stream.ActorMaterializer"></a><a id="implicitActorMaterializer:ActorMaterializer"></a>
+      <a id="implicitActorMaterializer:akka.stream.Materializer"></a><a id="implicitActorMaterializer:Materializer"></a>
       <span class="permalink">
-      <a href="../../../com/clevercloud/warp10client/WarpClientContext.html#implicitActorMaterializer:akka.stream.ActorMaterializer" title="Permalink">
+      <a href="../../../com/clevercloud/warp10client/WarpClientContext.html#implicitActorMaterializer:akka.stream.Materializer" title="Permalink">
         <i class="material-icons"></i>
       </a>
     </span>
@@ -458,7 +458,7 @@
         <span class="kind">def</span>
       </span>
       <span class="symbol">
-        <span class="name">implicitActorMaterializer</span><span class="result">: <span class="extype" name="akka.stream.ActorMaterializer">ActorMaterializer</span></span>
+        <span class="name">implicitActorMaterializer</span><span class="result">: <span class="extype" name="akka.stream.Materializer">Materializer</span></span>
       </span>
       
       
@@ -688,12 +688,12 @@
       </span>
       
       <div class="fullcomment"><dl class="attributes block"> <dt>Definition Classes</dt><dd>AnyRef</dd><dt>Annotations</dt><dd>
-                <span class="name">@native</span><span class="args">()</span>
-              
                 <span class="name">@throws</span><span class="args">(<span>
       
       <span class="defval" name="classOf[java.lang.InterruptedException]">...</span>
     </span>)</span>
+              
+                <span class="name">@native</span><span class="args">()</span>
               
         </dd></dl></div>
     </li>
