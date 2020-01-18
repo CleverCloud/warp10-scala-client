@@ -7,7 +7,7 @@ scala:
   - 2.13.1
 
 env:
-  - DOCKERTAG=2.3.0
+  - DOCKERTAG=2.3.0-ci
 
 services:
   - docker
