@@ -2,7 +2,7 @@ organization := """com.clevercloud"""
 
 name := """akka-warp10-scala-client"""
 
-version := "1.4.1"
+version := "1.4.2-SNAPSHOT"
 
 scalaVersion := "2.12.10"
 
