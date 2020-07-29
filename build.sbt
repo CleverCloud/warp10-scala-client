@@ -4,9 +4,9 @@ name := """akka-warp10-scala-client"""
 
 version := "1.4.2-SNAPSHOT"
 
-scalaVersion := "2.12.10"
+scalaVersion := "2.13.3"
 
-crossScalaVersions := Seq("2.12.10", "2.13.1")
+crossScalaVersions := Seq("2.12.10", "2.13.3")
 
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.6.8",
