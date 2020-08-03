@@ -17,7 +17,7 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-generic" % "0.13.0",
   "io.circe" %% "circe-parser" % "0.13.0",
   "org.apache.commons" % "commons-lang3" % "3.11",
-  "org.specs2" %% "specs2-core" % "4.10.1" % Test
+  "org.specs2" %% "specs2-core" % "4.10.2" % Test
 )
 
 bintrayOrganization := Some("clevercloud")
