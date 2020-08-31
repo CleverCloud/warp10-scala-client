@@ -3,8 +3,9 @@ package com.clevercloud.warp10client.models
 import java.net.URLDecoder
 import java.time._
 
-import io.circe.{Json => CirceJson}
-import play.api.libs.json._
+import io.circe._
+
+import scala.collection.immutable.ListMap
 import scala.util.{Failure, Success, Try}
 
 object gts_module {
@@ -25,26 +26,10 @@ object gts_module {
     case object CantParseAsBoolean extends InvalidGTSPointFormat
     case object CantParseAsDouble extends InvalidGTSPointFormat
     case object CantParseAsString extends InvalidGTSPointFormat
+    case object CantParseAsMacro extends InvalidGTSPointFormat
+    case object MacroValueParseNotImplemented extends InvalidGTSPointFormat
   }
   import gts_errors._
-
-  implicit val gtsValueBooleanWrites = Json.writes[GTSBooleanValue]
-  implicit val gtsValueLongWrites = Json.writes[GTSLongValue]
-  implicit val gtsValueDoubleWrites = Json.writes[GTSDoubleValue]
-  implicit val gtsValueStringWrites = Json.writes[GTSStringValue]
-  implicit val gtsValueWrites = new Writes[GTSValue] {
-    def writes(x: GTSValue): JsValue = {
-      x match {
-        case b: GTSBooleanValue  => gtsValueBooleanWrites.writes(b)
-        case l: GTSLongValue => gtsValueLongWrites.writes(l)
-        case d: GTSDoubleValue => gtsValueDoubleWrites.writes(d)
-        case s: GTSStringValue => gtsValueStringWrites.writes(s)
-      }
-    }
-  }
-  implicit val coordinatesWrites = Json.writes[Coordinates]
-  implicit val gtsPointWrites = Json.writes[GTSPoint]
-  implicit val gtsWrites = Json.writes[GTS]
 
   implicit object gtsPointOrdering extends Ordering[GTSPoint] {
     def compare(x: GTSPoint, y: GTSPoint): Int = x.ts.get.compare(y.ts.get)
@@ -269,12 +254,33 @@ object gts_module {
   case class GTSStringValue(value: String) extends GTSValue {
     override def serialize: String = s"'$value'"
   }
+  case class GTSMacroValue(
+                            prefix: String,
+                            `macro`: String,
+                            values: ListMap[String, Any], //list map to keep order
+                          ) extends GTSValue {
+    override def serialize: String = s":$prefix:${`macro`}:${this.printValues}"
+
+    def printValues = {
+      this.values.map({ case (key, value) => {
+        value match {
+          case _: String => s"'$key' '$value'"
+          case _: Double => s"'$key' $value"
+          case _: Long => s"'$key' $value"
+          case _: Boolean => s"'$key' $value"
+          case _: Int => s"'$key' $value"
+          case _: Array[Byte] => s"'$key' $value"
+        }
+      }}).mkString("{", " ", "}")
+    }
+  }
 
   object GTSValue {
     def apply(value: Long) = GTSLongValue(value)
     def apply(value: Double) = GTSDoubleValue(value)
     def apply(value: Boolean) = GTSBooleanValue(value)
     def apply(value: String) = GTSStringValue(value)
+    def apply(prefix: String, `macro`: String, values: ListMap[String, Any]) = GTSMacroValue(prefix, `macro`, values)
 
     def parse(string: String): Either[InvalidGTSPointFormat, GTSValue] = {
       def isStringValue = string.startsWith("'") && string.endsWith("'")
@@ -282,8 +288,11 @@ object gts_module {
       def isFalseValue = (string == "false" || string == "F")
       def isLongValue = string.matches("(\\+|-)?\\d+")
       def isDoubleValue = string.matches("(\\+|-)?\\d+(\\.\\d*)?")
+      def isMacroValue = string.matches(":\\w.*:\\w.*:\\{.+\\}")
 
-      if (isStringValue) {
+      if (isMacroValue) {
+        Left(MacroValueParseNotImplemented)
+      } else if (isStringValue) {
         Right(GTSValue(string.substring(1, string.length - 1)))
       } else if (isTrueValue) {
         Right(GTSValue(true))
@@ -298,7 +307,7 @@ object gts_module {
       }
     }
 
-    def parse(value: CirceJson): Either[InvalidGTSPointFormat, GTSValue] = {
+    def parse(value: Json): Either[InvalidGTSPointFormat, GTSValue] = {
       if (value.isString) {
         value.asString match {
           case Some(string) => Right(GTSValue(string.substring(1, string.length - 1)))

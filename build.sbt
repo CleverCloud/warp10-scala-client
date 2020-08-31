@@ -12,7 +12,6 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-actor" % "2.6.8",
   "com.typesafe.akka" %% "akka-http" % "10.2.0",
   "com.typesafe.akka" %% "akka-stream" % "2.6.8",
-  "com.typesafe.play" %% "play-json" % "2.9.0",
   "io.circe" %% "circe-core" % "0.13.0",
   "io.circe" %% "circe-generic" % "0.13.0",
   "io.circe" %% "circe-parser" % "0.13.0",
