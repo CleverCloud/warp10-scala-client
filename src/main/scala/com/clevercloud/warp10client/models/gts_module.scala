@@ -27,6 +27,7 @@ object gts_module {
     case object CantParseAsDouble extends InvalidGTSPointFormat
     case object CantParseAsString extends InvalidGTSPointFormat
     case object CantParseAsMacro extends InvalidGTSPointFormat
+    case object MacroValueParseNotImplemented extends InvalidGTSPointFormat
   }
   import gts_errors._
 
@@ -280,13 +281,6 @@ object gts_module {
     def apply(value: Boolean) = GTSBooleanValue(value)
     def apply(value: String) = GTSStringValue(value)
     def apply(prefix: String, `macro`: String, values: ListMap[String, Any]) = GTSMacroValue(prefix, `macro`, values)
-    def apply(prefix: String, `macro`: String, values: String) = {
-      val parsedValues = ListMap.empty[String, Any]
-
-      values.subSequence(1, values.size -1)
-
-      GTSMacroValue(prefix, `macro`, parsedValues)
-    }
 
     def parse(string: String): Either[InvalidGTSPointFormat, GTSValue] = {
       def isStringValue = string.startsWith("'") && string.endsWith("'")
@@ -297,8 +291,7 @@ object gts_module {
       def isMacroValue = string.matches(":\\w.*:\\w.*:\\{.+\\}")
 
       if (isMacroValue) {
-        val splitted = string.split(":")
-        Right(GTSValue(splitted(1), splitted(2), splitted(3)))
+        Left(MacroValueParseNotImplemented)
       } else if (isStringValue) {
         Right(GTSValue(string.substring(1, string.length - 1)))
       } else if (isTrueValue) {
