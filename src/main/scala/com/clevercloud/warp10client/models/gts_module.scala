@@ -5,6 +5,7 @@ import java.time._
 
 import io.circe._
 
+import scala.collection.immutable.ListMap
 import scala.util.{Failure, Success, Try}
 
 object gts_module {
@@ -25,6 +26,7 @@ object gts_module {
     case object CantParseAsBoolean extends InvalidGTSPointFormat
     case object CantParseAsDouble extends InvalidGTSPointFormat
     case object CantParseAsString extends InvalidGTSPointFormat
+    case object CantParseAsMacro extends InvalidGTSPointFormat
   }
   import gts_errors._
 
@@ -251,12 +253,40 @@ object gts_module {
   case class GTSStringValue(value: String) extends GTSValue {
     override def serialize: String = s"'$value'"
   }
+  case class GTSMacroValue(
+                            prefix: String,
+                            `macro`: String,
+                            values: ListMap[String, Any], //list map to keep order
+                          ) extends GTSValue {
+    override def serialize: String = s":$prefix:${`macro`}:${this.printValues}"
+
+    def printValues = {
+      this.values.map({ case (key, value) => {
+        value match {
+          case _: String => s"'$key' '$value'"
+          case _: Double => s"'$key' $value"
+          case _: Long => s"'$key' $value"
+          case _: Boolean => s"'$key' $value"
+          case _: Int => s"'$key' $value"
+          case _: Array[Byte] => s"'$key' $value"
+        }
+      }}).mkString("{", " ", "}")
+    }
+  }
 
   object GTSValue {
     def apply(value: Long) = GTSLongValue(value)
     def apply(value: Double) = GTSDoubleValue(value)
     def apply(value: Boolean) = GTSBooleanValue(value)
     def apply(value: String) = GTSStringValue(value)
+    def apply(prefix: String, `macro`: String, values: ListMap[String, Any]) = GTSMacroValue(prefix, `macro`, values)
+    def apply(prefix: String, `macro`: String, values: String) = {
+      val parsedValues = ListMap.empty[String, Any]
+
+      values.subSequence(1, values.size -1)
+
+      GTSMacroValue(prefix, `macro`, parsedValues)
+    }
 
     def parse(string: String): Either[InvalidGTSPointFormat, GTSValue] = {
       def isStringValue = string.startsWith("'") && string.endsWith("'")
@@ -264,8 +294,12 @@ object gts_module {
       def isFalseValue = (string == "false" || string == "F")
       def isLongValue = string.matches("(\\+|-)?\\d+")
       def isDoubleValue = string.matches("(\\+|-)?\\d+(\\.\\d*)?")
+      def isMacroValue = string.matches(":\\w.*:\\w.*:\\{.+\\}")
 
-      if (isStringValue) {
+      if (isMacroValue) {
+        val splitted = string.split(":")
+        Right(GTSValue(splitted(1), splitted(2), splitted(3)))
+      } else if (isStringValue) {
         Right(GTSValue(string.substring(1, string.length - 1)))
       } else if (isTrueValue) {
         Right(GTSValue(true))
