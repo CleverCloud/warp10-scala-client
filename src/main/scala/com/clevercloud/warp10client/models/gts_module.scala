@@ -3,8 +3,8 @@ package com.clevercloud.warp10client.models
 import java.net.URLDecoder
 import java.time._
 
-import io.circe.{Json => CirceJson}
-import play.api.libs.json._
+import io.circe._
+
 import scala.util.{Failure, Success, Try}
 
 object gts_module {
@@ -27,24 +27,6 @@ object gts_module {
     case object CantParseAsString extends InvalidGTSPointFormat
   }
   import gts_errors._
-
-  implicit val gtsValueBooleanWrites = Json.writes[GTSBooleanValue]
-  implicit val gtsValueLongWrites = Json.writes[GTSLongValue]
-  implicit val gtsValueDoubleWrites = Json.writes[GTSDoubleValue]
-  implicit val gtsValueStringWrites = Json.writes[GTSStringValue]
-  implicit val gtsValueWrites = new Writes[GTSValue] {
-    def writes(x: GTSValue): JsValue = {
-      x match {
-        case b: GTSBooleanValue  => gtsValueBooleanWrites.writes(b)
-        case l: GTSLongValue => gtsValueLongWrites.writes(l)
-        case d: GTSDoubleValue => gtsValueDoubleWrites.writes(d)
-        case s: GTSStringValue => gtsValueStringWrites.writes(s)
-      }
-    }
-  }
-  implicit val coordinatesWrites = Json.writes[Coordinates]
-  implicit val gtsPointWrites = Json.writes[GTSPoint]
-  implicit val gtsWrites = Json.writes[GTS]
 
   implicit object gtsPointOrdering extends Ordering[GTSPoint] {
     def compare(x: GTSPoint, y: GTSPoint): Int = x.ts.get.compare(y.ts.get)
@@ -298,7 +280,7 @@ object gts_module {
       }
     }
 
-    def parse(value: CirceJson): Either[InvalidGTSPointFormat, GTSValue] = {
+    def parse(value: Json): Either[InvalidGTSPointFormat, GTSValue] = {
       if (value.isString) {
         value.asString match {
           case Some(string) => Right(GTSValue(string.substring(1, string.length - 1)))
