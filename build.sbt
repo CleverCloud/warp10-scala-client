@@ -15,7 +15,7 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-core" % "0.13.0",
   "io.circe" %% "circe-generic" % "0.13.0",
   "io.circe" %% "circe-parser" % "0.13.0",
-  "org.apache.commons" % "commons-lang3" % "3.11",
+  "org.apache.commons" % "commons-lang3" % "3.12.0",
   "org.specs2" %% "specs2-core" % "4.10.6" % Test
 )
 
