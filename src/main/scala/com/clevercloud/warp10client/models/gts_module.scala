@@ -11,7 +11,7 @@ import scala.util.{Failure, Success, Try}
 object gts_module {
   case object gts_errors {
     sealed trait InvalidGTSFormat
-    case object InvalidGTSStructureFormat extends InvalidGTSFormat
+    case class InvalidGTSStructureFormat(error: String) extends InvalidGTSFormat
     case class ListInvalidGTSFormat(errors: Seq[InvalidGTSFormat]) extends InvalidGTSFormat
     case object InvalidGTSclassnameFormat extends InvalidGTSFormat
     case object InvalidGTSLabelsFormat extends InvalidGTSFormat
@@ -63,9 +63,9 @@ object gts_module {
 
     def parseGTS(input: String): Either[InvalidGTSFormat, GTS] = {
       val unparsedGTSPointList: List[String] = input.split("\n").toList
-      val firstPointWithLabelsAndclassname: String = unparsedGTSPointList.head
+      val firstPointWithLabelsAndClassname: String = unparsedGTSPointList.head
 
-      firstPointWithLabelsAndclassname match {
+      firstPointWithLabelsAndClassname match {
         case gtsRegex(tsAsString, coordinatesAsString, elevAsString, classnameAsString, labelsAsString, valueAsString) => {
           val tsEither = parseLong(notNullString(tsAsString), InvalidGTSPointTimestampFormat)
           val coordinatesEither = parseCoordinates(notNullString(coordinatesAsString))
@@ -94,7 +94,7 @@ object gts_module {
               ))
           }
         }
-        case _ => Left(InvalidGTSStructureFormat)
+        case _ => Left(InvalidGTSStructureFormat(s"${firstPointWithLabelsAndClassname} is not matching gtsRegex"))
       }
     }
   }
