@@ -62,6 +62,7 @@ object Fetcher {
               case Right(gtsList) => Right(gtsList)
             }
           } else {
+            log.debug(s"[FETCHER] empty data provided, let's return empty List()")
             Right(List())
           }
         }
@@ -78,13 +79,18 @@ object Fetcher {
 
   def stringToGTSSeq: Flow[String, Seq[GTS], NotUsed] = {
     Flow[String]
-      .map {
-        GTS.parse(_) match {
-          case Left(e) => {
-            log.error(s"[FETCHER] can't parse GTS due to: ${e.toString()}")
-            throw WarpException(s"[FETCHER] can't parse GTS due to: $e")
+      .map { data =>
+        if (data.size > 0) {
+          GTS.parse(data) match {
+            case Left(e) => {
+              log.error(s"Can't parse GTS due to: ${e.toString()}")
+              throw WarpException(s"Can't parse GTS due to: $e")
+            }
+            case Right(gtsList) => gtsList
           }
-          case Right(gtsList) => gtsList
+        } else {
+          log.debug(s"Empty data provided, let's return empty Seq()")
+          Seq()
         }
       }
   }
