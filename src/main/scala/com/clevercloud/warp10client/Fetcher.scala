@@ -9,7 +9,7 @@ import akka.NotUsed
 import akka.http.scaladsl.model._
 import akka.stream.scaladsl.Flow
 
-import org.apache.commons.lang3.StringEscapeUtils
+import org.apache.commons.text.StringEscapeUtils
 
 import com.clevercloud.warp10client.models._
 import com.clevercloud.warp10client.models.gts_module.GTS
