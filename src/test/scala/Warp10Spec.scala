@@ -165,7 +165,7 @@ class Warp10ClientSpec extends Specification {
 
   def e2 = Await.result(
     realWarpClient.fetch(readToken, Query(
-      Selector("accessLogs", Map(".app=" -> "test")),
+      Selector("rangedFetchTest", Map(".app=" -> "test")),
       FetchRange(utcNowStartMicro - 10000000L, utcNowStartMicro)
     )),
     Period(1000, MILLISECONDS)
