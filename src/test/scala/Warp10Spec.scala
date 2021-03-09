@@ -145,7 +145,7 @@ class Warp10ClientSpec extends Specification {
   // check no data
   def e1 = Await.result(
     realWarpClient.fetch(readToken, Query(
-      Selector("accessLogs", Map(".app" -> "test")),
+      Selector("accessLogs", Map(".app=" -> "test")),
       FetchRange(LocalDateTime.now.minusSeconds(20), LocalDateTime.now)
     )),
     Period(1000, MILLISECONDS)
