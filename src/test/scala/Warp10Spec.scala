@@ -152,7 +152,7 @@ class Warp10ClientSpec extends Specification {
 
   // push 3000 points
   val realSeqRangedFetch: Seq[GTS] = (1 to 3000) map { i =>
-    GTS("rangedFetchTest", Map(".app" -> "test"), Seq(GTSPoint(Some(utcNowStartMicro - (i * 1L)), None, None, GTSStringValue(s"J$i"))))
+    GTS("rangedFetchTest", Map(".app=" -> "test"), Seq(GTSPoint(Some(utcNowStartMicro - (i * 1L)), None, None, GTSStringValue(s"J$i"))))
   }
 
   // wait 5s for warp10 to store data
@@ -161,7 +161,7 @@ class Warp10ClientSpec extends Specification {
   // get data
   def e2 = Await.result(
     realWarpClient.fetch(readToken, Query(
-      Selector("accessLogs", Map(".app" -> "test")),
+      Selector("accessLogs", Map(".app=" -> "test")),
       FetchRange(utcNowStartMicro - 10000000L, utcNowStartMicro)
     )),
     Period(1000, MILLISECONDS)
