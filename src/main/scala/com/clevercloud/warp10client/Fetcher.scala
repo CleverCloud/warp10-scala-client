@@ -54,6 +54,7 @@ object Fetcher {
         .readAllDataBytes(httpResponse.entity.dataBytes)
         .map { data =>
           if (data.size > 0) {
+            log.debug(s"[FETCHER] data provided, let's parse them")
             GTS.parse(data) match {
               case Left(e) => {
                 log.error(s"[FETCHER] can't parse GTS due to: ${e.toString()}")
@@ -81,6 +82,7 @@ object Fetcher {
     Flow[String]
       .map { data =>
         if (data.size > 0) {
+          log.debug(s"Data provided, let's parse them")
           GTS.parse(data) match {
             case Left(e) => {
               log.error(s"Can't parse GTS due to: ${e.toString()}")
