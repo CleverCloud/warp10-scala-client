@@ -1,20 +1,22 @@
 package com.clevercloud.warp10client
 
 import java.util.UUID
-
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
 import akka.NotUsed
 import akka.http.scaladsl.model._
 import akka.stream.scaladsl.Flow
-
+import com.typesafe.scalalogging.Logger
 import org.apache.commons.text.StringEscapeUtils
+import org.slf4j.LoggerFactory
 
 import com.clevercloud.warp10client.models._
 import com.clevercloud.warp10client.models.gts_module.GTS
 
 object Fetcher {
+  val log = Logger(LoggerFactory.getLogger("Fetcher"))
+
   def fetch(readToken: String)(
     implicit warpClientContext: WarpClientContext
   ): Flow[Query[FetchRange], Future[Either[WarpException, Seq[GTS]]], NotUsed] = {
@@ -34,6 +36,7 @@ object Fetcher {
   def fetchRequest(readToken: String, query: Query[FetchRange])(
     implicit warpClientContext: WarpClientContext
   ) = {
+    log.debug(s"[FETCHER] sending ${warpClientContext.configuration.fetchUrl}?${query.serialize}")
     HttpRequest(
       method = HttpMethods.GET,
       uri = warpClientContext.configuration.fetchUrl + "?" + query.serialize,
@@ -51,7 +54,10 @@ object Fetcher {
         .readAllDataBytes(httpResponse.entity.dataBytes)
         .map {
           GTS.parse(_) match {
-            case Left(e) => throw WarpException(s"Can't parse GTS due to: $e")
+            case Left(e) => {
+              log.error(s"[FETCHER] can't parse GTS due to: ${e.toString()}")
+              throw WarpException(s"[FETCHER] can't parse GTS due to: $e")
+            }
             case Right(gtsList) => Right(gtsList)
           }
         }
@@ -60,7 +66,8 @@ object Fetcher {
         .readAllDataBytes(httpResponse.entity.dataBytes)
         .map { content =>
           val escapedContent = StringEscapeUtils.unescapeXml(content)
-          Left(WarpException(s"HTTP status: ${httpResponse.status.intValue.toString}: $escapedContent"))
+          log.error(s"[FETCHER] HTTP status: ${httpResponse.status.intValue.toString}: $escapedContent")
+          Left(WarpException(s"[FETCHER] HTTP status: ${httpResponse.status.intValue.toString}: $escapedContent"))
         }
     }
   }
@@ -69,7 +76,10 @@ object Fetcher {
     Flow[String]
       .map {
         GTS.parse(_) match {
-          case Left(e) => throw WarpException(s"Can't parse GTS due to: $e")
+          case Left(e) => {
+            log.error(s"[FETCHER] can't parse GTS due to: ${e.toString()}")
+            throw WarpException(s"[FETCHER] can't parse GTS due to: $e")
+          }
           case Right(gtsList) => gtsList
         }
       }
