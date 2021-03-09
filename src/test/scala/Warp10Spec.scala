@@ -31,6 +31,7 @@ class Warp10ClientSpec extends Specification {
       Seq[GTS] -> on fetch success                                    $f2
 
       Seq[GTS] empty -> on fetch success on empty data                $e1
+      Seq[GTS] contains data -> on fetch success                      $e2
 
       Unit -> on sending 3000GTS to real Warp10                       $p5
       WarpException -> on invalid data                                $p6
@@ -140,6 +141,7 @@ class Warp10ClientSpec extends Specification {
   // PUSH 10 000 GTS to real Warp10
   val realWarpClient = WarpClient("localhost", 8080)
 
+  // check no data
   def e1 = Await.result(
     realWarpClient.fetch(readToken, Query(
       Selector("accessLogs", Map(".app" -> "test")),
@@ -148,9 +150,24 @@ class Warp10ClientSpec extends Specification {
     Period(1000, MILLISECONDS)
   ) must beAnInstanceOf[Right[_ ,_]]
 
+  // push 3000 points
   val realSeqRangedFetch: Seq[GTS] = (1 to 3000) map { i =>
     GTS("rangedFetchTest", Map(".app" -> "test"), Seq(GTSPoint(Some(utcNowStartMicro - (i * 1L)), None, None, GTSStringValue(s"J$i"))))
   }
+
+  // wait 5s for warp10 to store data
+  Thread.sleep(5000)
+
+  // get data
+  def e2 = Await.result(
+    realWarpClient.fetch(readToken, Query(
+      Selector("accessLogs", Map(".app" -> "test")),
+      FetchRange(utcNowStartMicro - 10000000L, utcNowStartMicro)
+    )),
+    Period(1000, MILLISECONDS)
+  ) must beAnInstanceOf[Right[_ ,_]]
+
+  println(e2)
 
   val validHugePush_p = realWarpClient.push(realSeqRangedFetch, writeToken)
   def p5 = Await.result(validHugePush_p, Period(100000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
