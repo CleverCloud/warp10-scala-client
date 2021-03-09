@@ -52,13 +52,17 @@ object Fetcher {
     if (httpResponse.status == StatusCodes.OK) {
       WarpClientUtils
         .readAllDataBytes(httpResponse.entity.dataBytes)
-        .map {
-          GTS.parse(_) match {
-            case Left(e) => {
-              log.error(s"[FETCHER] can't parse GTS due to: ${e.toString()}")
-              throw WarpException(s"[FETCHER] can't parse GTS due to: $e")
+        .map { data =>
+          if (data.size > 0) {
+            GTS.parse(data) match {
+              case Left(e) => {
+                log.error(s"[FETCHER] can't parse GTS due to: ${e.toString()}")
+                throw WarpException(s"[FETCHER] can't parse GTS due to: $e")
+              }
+              case Right(gtsList) => Right(gtsList)
             }
-            case Right(gtsList) => Right(gtsList)
+          } else {
+            Right(List())
           }
         }
     } else {
