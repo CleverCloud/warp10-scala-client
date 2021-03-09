@@ -37,7 +37,7 @@ case class RawSelector(selector: String) extends Selector {
 }
 
 case class LabelSelector(key: String, value: String) extends Serializable {
-  override def serialize: String = s"$key$value"
+  override def serialize: String = s"$key=$value"
 }
 
 sealed trait FetchRange extends Serializable
