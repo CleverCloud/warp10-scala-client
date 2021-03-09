@@ -31,10 +31,11 @@ class Warp10ClientSpec extends Specification {
       Seq[GTS] -> on fetch success                                    $f2
 
       Seq[GTS] empty -> on fetch success on empty data                $e1
-      Seq[GTS] contains data -> on fetch success                      $e2
 
       Unit -> on sending 3000GTS to real Warp10                       $p5
       WarpException -> on invalid data                                $p6
+
+      Seq[GTS] contains data -> on fetch success                      $e2
   """
 
   val zonedNow = ZonedDateTime.now
@@ -155,10 +156,13 @@ class Warp10ClientSpec extends Specification {
     GTS("rangedFetchTest", Map(".app=" -> "test"), Seq(GTSPoint(Some(utcNowStartMicro - (i * 1L)), None, None, GTSStringValue(s"J$i"))))
   }
 
-  // wait 5s for warp10 to store data
-  Thread.sleep(5000)
+  val validHugePush_p = realWarpClient.push(realSeqRangedFetch, writeToken)
+  def p5 = Await.result(validHugePush_p, Period(100000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
 
-  // get data
+  val gtsPointSeq6 = Seq(GTSPoint(Some(1.toLong), Some(Coordinates(lat = 3.333, lon = 4.444)), None, GTSLongValue(73346576)))
+  val invalidSend6 = realWarpClient.push(GTS("testClass", Map.empty[String, String], gtsPointSeq6), writeToken)
+  def p6 = Await.result(invalidSend6, Period(10000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
+
   def e2 = Await.result(
     realWarpClient.fetch(readToken, Query(
       Selector("accessLogs", Map(".app=" -> "test")),
@@ -166,15 +170,6 @@ class Warp10ClientSpec extends Specification {
     )),
     Period(1000, MILLISECONDS)
   ) must beAnInstanceOf[Right[_ ,_]]
-
-  println(e2)
-
-  val validHugePush_p = realWarpClient.push(realSeqRangedFetch, writeToken)
-  def p5 = Await.result(validHugePush_p, Period(100000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
-
-  val gtsPointSeq6 = Seq(GTSPoint(Some(1.toLong), Some(Coordinates(lat = 3.333, lon = 4.444)), None, GTSLongValue(73346576)))
-  val invalidSend6 = realWarpClient.push(GTS("testClass", Map.empty[String, String], gtsPointSeq6), writeToken)
-  def p6 = Await.result(invalidSend6, Period(10000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
 
   //private def getNbGTSPoints(gtsSeq: Seq[GTS]): Int = gtsSeq.map(_.points.size).sum
 
