@@ -20,7 +20,7 @@ libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.2.3",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.3",
 
-  "org.specs2" %% "specs2-core" % "4.10.6" % Test
+  "org.specs2" %% "specs2-core" % "4.11.0" % Test
 )
 
 bintrayOrganization := Some("clevercloud")
