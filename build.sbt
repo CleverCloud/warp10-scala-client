@@ -4,9 +4,9 @@ name := """akka-warp10-scala-client"""
 
 version := "1.5.2"
 
-scalaVersion := "2.13.5"
+scalaVersion := "2.13.6"
 
-crossScalaVersions := Seq("2.12.13", "2.13.5")
+crossScalaVersions := Seq("2.12.13", "2.13.6")
 
 libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-text" % "1.9",
