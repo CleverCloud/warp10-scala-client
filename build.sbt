@@ -12,7 +12,7 @@ libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-text" % "1.9",
   "com.typesafe.akka" %% "akka-actor" % "2.6.14",
   "com.typesafe.akka" %% "akka-http" % "10.2.4",
-  "com.typesafe.akka" %% "akka-stream" % "2.6.13",
+  "com.typesafe.akka" %% "akka-stream" % "2.6.14",
   "io.circe" %% "circe-core" % "0.14.1",
   "io.circe" %% "circe-generic" % "0.14.1",
   "io.circe" %% "circe-parser" % "0.14.1",
