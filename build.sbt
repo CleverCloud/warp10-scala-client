@@ -6,7 +6,7 @@ version := "1.5.2"
 
 scalaVersion := "2.13.6"
 
-crossScalaVersions := Seq("2.12.14", "2.13.6")
+crossScalaVersions := Seq("2.12.15", "2.13.6")
 
 libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-text" % "1.9",
