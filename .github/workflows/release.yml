@@ -16,7 +16,7 @@ jobs:
       - name: Setup Scala
         uses: olafurpg/setup-scala@v13
         with:
-            java-version: "adopt@1.17"
+            java-version: "adopt@1.11"
       - run: sbt ci-release
         env:
           PGP_SECRET: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
