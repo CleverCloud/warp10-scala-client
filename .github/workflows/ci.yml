@@ -112,8 +112,8 @@ jobs:
           rm targets.tar
 
       - env:
-          PGP_PASSPHRASE: ${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}
-          PGP_SECRET: ${{ secrets.OSSRH_GPG_SECRET_KEY }}
+          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+          PGP_SECRET: ${{ secrets.PGP_SECRET }}
           SONATYPE_PASSWORD: ${{ secrets.OSSRH_TOKEN }}
           SONATYPE_USERNAME: ${{ secrets.OSSRH_USERNAME }}
         run: sbt ++${{ matrix.scala }} ci-release
