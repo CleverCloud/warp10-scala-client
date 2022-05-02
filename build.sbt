@@ -1,6 +1,6 @@
 inThisBuild(
   List(
-    organization := "com.clevercloud",
+    organization := "com.clever-cloud",
     homepage := Some(url("https://github.com/clevercloud/akka-warp10-scala-client")),
     licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
     developers := List(
@@ -43,7 +43,7 @@ inThisBuild(
       "-language:postfixOps"
     ),
     Test / parallelExecution := false,
-    git.remoteRepo := "git@github.com:clevercloud/akka-warp10-scala-client.git",
+    git.remoteRepo := "git@github.com:clevercloud/akka-warp10-scala-client.git"
   )
 )
 enablePlugins(GhpagesPlugin)
