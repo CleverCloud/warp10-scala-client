@@ -62,3 +62,19 @@ developers := List(Developer("kannarfr", "Alexandre DUVAL", "kannarfr@gmail.com"
 resolvers += Resolver.mavenLocal
 resolvers += Resolver.defaultLocal
 resolvers += Resolver.jcenterRepo
+
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowPublishTargetBranches := Seq(RefPredicate.StartsWith(Ref.Tag("v")))
+ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
+ThisBuild / githubWorkflowPublishTargetBranches += RefPredicate.StartsWith(Ref.Tag("v"))
+ThisBuild / githubWorkflowPublish := Seq(
+  WorkflowStep.Sbt(
+    List("ci-release"),
+    env = Map(
+      "PGP_PASSPHRASE" -> "${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}",
+      "PGP_SECRET" -> "${{ secrets.OSSRH_GPG_SECRET_KEY }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.OSSRH_USERNAME }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.OSSRH_TOKEN }}"
+    )
+  )
+)
