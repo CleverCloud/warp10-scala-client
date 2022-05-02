@@ -6,9 +6,10 @@ import java.time._
 import io.circe._
 
 import scala.collection.immutable.ListMap
-import scala.util.{Failure, Success, Try}
+import scala.util.{ Failure, Success, Try }
 
 object gts_module {
+
   case object gts_errors {
     sealed trait InvalidGTSFormat
     case class InvalidGTSStructureFormat(error: String) extends InvalidGTSFormat
@@ -36,12 +37,15 @@ object gts_module {
   }
 
   case class GTS(
-    classname: String,
-    labels: Map[String, String],
-    points: Seq[GTSPoint]
-  ) {
-    def toSelector: String = s"~$classname{${labels.map { case (key,value) => s"$key=$value" }.mkString(",")}}"
-    def serialize: String = (Seq(points.head.serializeWith(classname, labels)) ++ points.drop(1).map(point => point.serializeWithoutMetadata())).mkString("\n=")
+      classname: String,
+      labels: Map[String, String],
+      points: Seq[GTSPoint]) {
+    def toSelector: String = s"~$classname{${labels.map { case (key, value) => s"$key=$value" }.mkString(",")}}"
+
+    def serialize: String = (Seq(points.head.serializeWith(classname, labels)) ++ points
+      .drop(1)
+      .map(point => point.serializeWithoutMetadata())).mkString("\n=")
+
     def filter(maxDate: Long): GTS = {
       val filteredPoints: Seq[GTSPoint] = points.filter(_.ts.isDefined).filter(_.ts.get >= maxDate)
       this.copy(points = filteredPoints)
@@ -56,8 +60,8 @@ object gts_module {
       val unparsedGTSList: List[String] = input.split("\n(?=[^=])").toList // split in GTS List
 
       unparsedGTSList.map(parseGTS(_)).partition(_.isLeft) match {
-        case (Nil,  gts) => Right(for(Right(i) <- gts) yield i)
-        case (err, _) => Left(for(Left(s) <- err) yield s)
+        case (Nil, gts) => Right(for (Right(i) <- gts) yield i)
+        case (err, _)   => Left(for (Left(s) <- err) yield s)
       }
     }
 
@@ -66,11 +70,19 @@ object gts_module {
       val firstPointWithLabelsAndClassname: String = unparsedGTSPointList.head
 
       firstPointWithLabelsAndClassname match {
-        case gtsRegex(tsAsString, coordinatesAsString, elevAsString, classnameAsString, labelsAsString, valueAsString) => {
+        case gtsRegex(
+              tsAsString,
+              coordinatesAsString,
+              elevAsString,
+              classnameAsString,
+              labelsAsString,
+              valueAsString
+            ) => {
           val tsEither = parseLong(notNullString(tsAsString), InvalidGTSPointTimestampFormat)
           val coordinatesEither = parseCoordinates(notNullString(coordinatesAsString))
           val elevEither = parseLong(notNullString(elevAsString), InvalidGTSPointElevationFormat)
-          val classnameEither = if (notNullString(classnameAsString).nonEmpty) Right(classnameAsString) else Left(InvalidGTSclassnameFormat)
+          val classnameEither =
+            if (notNullString(classnameAsString).nonEmpty) Right(classnameAsString) else Left(InvalidGTSclassnameFormat)
           val labelsEither = parseLabels(notNullString(labelsAsString))
           val valueEither = GTSValue.parse(notNullString(valueAsString))
 
@@ -80,18 +92,22 @@ object gts_module {
               unparsedGTSPointList
                 .drop(1) // drop first point which is already parsed
                 .map(GTSPoint.parse)
-                .foldRight(Right(Nil): Either[InvalidGTSFormat, List[GTSPoint]])((e, acc) => for (xs <- acc; x <- e) yield x :: xs) match {
-                  case Left(e) => Left(e)
-                  case Right(points) => Right(GTS(classname = classname, labels = labels, points = firstPoint :: points))
-                }
+                .foldRight(Right(Nil): Either[InvalidGTSFormat, List[GTSPoint]])((e, acc) =>
+                  for (xs <- acc; x <- e) yield x :: xs
+                ) match {
+                case Left(e)       => Left(e)
+                case Right(points) => Right(GTS(classname = classname, labels = labels, points = firstPoint :: points))
+              }
             }
             case _ =>
-              Left(ListInvalidGTSFormat(
-                Seq(tsEither, coordinatesEither, elevEither, classnameEither, labelsEither, valueEither)
-                  .filter(_.isLeft)
-                  .map(_.left)
-                  .map(_.get)
-              ))
+              Left(
+                ListInvalidGTSFormat(
+                  Seq(tsEither, coordinatesEither, elevEither, classnameEither, labelsEither, valueEither)
+                    .filter(_.isLeft)
+                    .map(_.left)
+                    .map(_.get)
+                )
+              )
           }
         }
         case _ => Left(InvalidGTSStructureFormat(s"${firstPointWithLabelsAndClassname} is not matching gtsRegex"))
@@ -104,28 +120,32 @@ object gts_module {
   }
 
   case class GTSPoint(
-    ts: Option[Long],
-    coordinates: Option[Coordinates],
-    elev: Option[Long],
-    value: GTSValue
-  ) {
-    def serializeWith(classname: String, labels: Map[String, String]): String = s"$serializeTs/$serializeCoordinates/$serializeElev ${serializeclassname(classname)}${serializeLabels(labels)} $serializeValue"
+      ts: Option[Long],
+      coordinates: Option[Coordinates],
+      elev: Option[Long],
+      value: GTSValue) {
+
+    def serializeWith(classname: String, labels: Map[String, String]): String =
+      s"$serializeTs/$serializeCoordinates/$serializeElev ${serializeclassname(classname)}${serializeLabels(labels)} $serializeValue"
     def serializeWithoutMetadata(): String = s"$serializeTs/$serializeCoordinates/$serializeElev $serializeValue"
     private def serializeTs = ts.map(_.toString).getOrElse("")
     private def serializeCoordinates = coordinates.map(_.serialize).getOrElse("")
     private def serializeElev = elev.map(_.toString).getOrElse("")
     private def serializeclassname(classname: String) = classname
-    private def serializeLabels(labels: Map[String, String]) = labels.map(pair => pair._1 + "=" + pair._2).mkString("{", ",", "}")
+
+    private def serializeLabels(labels: Map[String, String]) =
+      labels.map(pair => pair._1 + "=" + pair._2).mkString("{", ",", "}")
     private def serializeValue = value.serialize
   }
 
   object GTSPoint {
+
     def apply(
-      ts: ZonedDateTime,
-      coordinates: Option[Coordinates],
-      elev: Option[Long],
-      value: GTSValue
-    ): GTSPoint = {
+        ts: ZonedDateTime,
+        coordinates: Option[Coordinates],
+        elev: Option[Long],
+        value: GTSValue
+      ): GTSPoint = {
       val utc = LocalDateTime.ofInstant(ts.toInstant, ZoneId.of("UTC"))
       val utcMilli = utc.atZone(ZoneId.of("UTC")).toInstant.toEpochMilli
       val utcMicro = s"${utcMilli}000".toLong
@@ -133,11 +153,11 @@ object gts_module {
     }
 
     def apply(
-      ts: LocalDateTime,
-      coordinates: Option[Coordinates],
-      elev: Option[Long],
-      value: GTSValue
-    ): GTSPoint = {
+        ts: LocalDateTime,
+        coordinates: Option[Coordinates],
+        elev: Option[Long],
+        value: GTSValue
+      ): GTSPoint = {
       val utcMilli = ts.toInstant(ZoneOffset.UTC).toEpochMilli
       val utcMicro = s"${utcMilli}000".toLong
       GTSPoint(Some(utcMicro), coordinates, elev, value)
@@ -158,12 +178,11 @@ object gts_module {
               Right(GTSPoint(ts = ts, coordinates = coordinates, elev = elev, value = value))
             }
             case _ =>
-              Left(ListInvalidGTSPointFormat(
-                Seq(tsEither, coordinatesEither, elevEither, valueEither)
-                  .filter(_.isLeft)
-                  .map(_.left)
-                  .map(_.get)
-              ))
+              Left(
+                ListInvalidGTSPointFormat(
+                  Seq(tsEither, coordinatesEither, elevEither, valueEither).filter(_.isLeft).map(_.left).map(_.get)
+                )
+              )
           }
         }
         case _ => Left(InvalidGTSPointStructureFormat)
@@ -184,7 +203,7 @@ object gts_module {
         val lonEither = parseDouble(coordinatesParts(1), InvalidGTSPointCoordinatesFormat)
         (latEither, lonEither) match {
           case (Right(Some(lat)), Right(Some(lon))) => Right(Some(Coordinates(lat, lon)))
-          case _ => Left(InvalidGTSPointCoordinatesFormat)
+          case _                                    => Left(InvalidGTSPointCoordinatesFormat)
         }
       } else {
         Left(InvalidGTSPointCoordinatesFormat)
@@ -202,10 +221,12 @@ object gts_module {
         val optionalDecodedKeyAndValueAsPairSeq = encodedKeyAndValuAsPairSeq.map {
           case (key, value) =>
             try {
-              Some((
-                URLDecoder.decode(key, "UTF-8"),
-                URLDecoder.decode(value, "UTF-8")
-              ))
+              Some(
+                (
+                  URLDecoder.decode(key, "UTF-8"),
+                  URLDecoder.decode(value, "UTF-8")
+                )
+              )
             } catch {
               case _: IllegalArgumentException => None
             }
@@ -226,7 +247,11 @@ object gts_module {
   private def parseLong = parseWithExceptionCatching(_.toLong) _
   private def parseDouble = parseWithExceptionCatching(_.toDouble) _
 
-  private def parseWithExceptionCatching[A](map: String => A)(input: String, resultOnError: InvalidGTSPointFormat): Either[InvalidGTSPointFormat, Option[A]] = {
+  private def parseWithExceptionCatching[A](
+      map: String => A
+    )(input: String,
+      resultOnError: InvalidGTSPointFormat
+    ): Either[InvalidGTSPointFormat, Option[A]] = {
     if (input.nonEmpty) {
       Try {
         map(input)
@@ -242,36 +267,45 @@ object gts_module {
   sealed trait GTSValue {
     def serialize: String
   }
+
   case class GTSLongValue(value: Long) extends GTSValue {
     override def serialize: String = value.toString
   }
+
   case class GTSDoubleValue(value: Double) extends GTSValue {
     override def serialize: String = value.toString
   }
+
   case class GTSBooleanValue(value: Boolean) extends GTSValue {
     override def serialize: String = value.toString
   }
+
   case class GTSStringValue(value: String) extends GTSValue {
     override def serialize: String = s"'$value'"
   }
+
   case class GTSMacroValue(
-                            prefix: String,
-                            `macro`: String,
-                            values: ListMap[String, Any], //list map to keep order
-                          ) extends GTSValue {
+      prefix: String,
+      `macro`: String,
+      values: ListMap[String, Any] // list map to keep order
+    ) extends GTSValue {
     override def serialize: String = s":$prefix:${`macro`}:${this.printValues}"
 
     def printValues = {
-      this.values.map({ case (key, value) => {
-        value match {
-          case _: String => s"'$key' '$value'"
-          case _: Double => s"'$key' $value"
-          case _: Long => s"'$key' $value"
-          case _: Boolean => s"'$key' $value"
-          case _: Int => s"'$key' $value"
-          case _: Array[Byte] => s"'$key' $value"
-        }
-      }}).mkString("{", " ", "}")
+      this.values
+        .map({
+          case (key, value) => {
+            value match {
+              case _: String      => s"'$key' '$value'"
+              case _: Double      => s"'$key' $value"
+              case _: Long        => s"'$key' $value"
+              case _: Boolean     => s"'$key' $value"
+              case _: Int         => s"'$key' $value"
+              case _: Array[Byte] => s"'$key' $value"
+            }
+          }
+        })
+        .mkString("{", " ", "}")
     }
   }
 
@@ -311,17 +345,17 @@ object gts_module {
       if (value.isString) {
         value.asString match {
           case Some(string) => Right(GTSValue(string.substring(1, string.length - 1)))
-          case None => Left(CantParseAsString)
+          case None         => Left(CantParseAsString)
         }
       } else if (value.isBoolean) {
         value.asBoolean match {
           case Some(boolean) => Right(GTSValue(boolean))
-          case None => Left(CantParseAsBoolean)
+          case None          => Left(CantParseAsBoolean)
         }
       } else if (value.isNumber) {
         value.asNumber match {
           case Some(number) => Right(GTSValue(number.toDouble))
-          case None => Left(CantParseAsDouble)
+          case None         => Left(CantParseAsDouble)
         }
       } else {
         Left(InvalidGTSPointValueFormat)

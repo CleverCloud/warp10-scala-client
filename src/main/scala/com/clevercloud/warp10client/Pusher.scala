@@ -3,7 +3,7 @@ package com.clevercloud.warp10client
 import java.util.UUID
 
 import scala.concurrent.Future
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 import akka.NotUsed
 import akka.http.scaladsl.model._
@@ -14,9 +14,12 @@ import org.apache.commons.lang3.StringEscapeUtils
 import com.clevercloud.warp10client.models.gts_module.GTS
 
 object Pusher {
-  def push(writeToken: String)(
-    implicit warpClientContext: WarpClientContext
-  ): Flow[GTS, Future[Either[WarpException, Unit]], NotUsed] = {
+
+  def push(
+      writeToken: String
+    )(implicit
+      warpClientContext: WarpClientContext
+    ): Flow[GTS, Future[Either[WarpException, Unit]], NotUsed] = {
     val uuid = UUID.randomUUID
     Flow[GTS]
       .map(gts => pushRequest(gts, writeToken))
@@ -26,13 +29,15 @@ object Pusher {
       .map({ case (responseTry, _) => responseTry })
       .map {
         case Success(response) => processResponse(response)
-        case Failure(e) => Future.successful(Left(WarpException(s"Error: $e")))
+        case Failure(e)        => Future.successful(Left(WarpException(s"Error: $e")))
       }
   }
 
-  def pushSeq(writeToken: String)(
-    implicit warpClientContext: WarpClientContext
-  ): Flow[Seq[GTS], Future[Either[WarpException, Unit]], NotUsed] = {
+  def pushSeq(
+      writeToken: String
+    )(implicit
+      warpClientContext: WarpClientContext
+    ): Flow[Seq[GTS], Future[Either[WarpException, Unit]], NotUsed] = {
     val uuid = UUID.randomUUID
     Flow[Seq[GTS]]
       .map(gtsSeq => pushSeqRequest(gtsSeq, writeToken))
@@ -42,13 +47,16 @@ object Pusher {
       .map({ case (responseTry, _) => responseTry })
       .map {
         case Success(response) => processResponse(response)
-        case Failure(e) => Future.successful(Left(WarpException(s"Error: $e")))
+        case Failure(e)        => Future.successful(Left(WarpException(s"Error: $e")))
       }
   }
 
-  def pushSeqRequest(gtsSeq: Seq[GTS], writeToken: String)(
-    implicit warpClientContext: WarpClientContext
-  ) = {
+  def pushSeqRequest(
+      gtsSeq: Seq[GTS],
+      writeToken: String
+    )(implicit
+      warpClientContext: WarpClientContext
+    ) = {
     HttpRequest(
       method = HttpMethods.POST,
       uri = warpClientContext.configuration.pushUrl,
@@ -57,9 +65,12 @@ object Pusher {
     )
   }
 
-  def pushRequest(gts: GTS, writeToken: String)(
-    implicit warpClientContext: WarpClientContext
-  ) = {
+  def pushRequest(
+      gts: GTS,
+      writeToken: String
+    )(implicit
+      warpClientContext: WarpClientContext
+    ) = {
     HttpRequest(
       method = HttpMethods.POST,
       uri = warpClientContext.configuration.pushUrl,
@@ -68,20 +79,20 @@ object Pusher {
     )
   }
 
-  def processResponse(httpResponse: HttpResponse)(
-    implicit warpClientContext: WarpClientContext
-  ): Future[Either[WarpException, Unit]] = {
+  def processResponse(
+      httpResponse: HttpResponse
+    )(implicit
+      warpClientContext: WarpClientContext
+    ): Future[Either[WarpException, Unit]] = {
     import warpClientContext._
 
     if (httpResponse.status == StatusCodes.OK) {
       Future.successful(Right(httpResponse.discardEntityBytes()))
     } else {
-      WarpClientUtils
-        .readAllDataBytes(httpResponse.entity.dataBytes)
-        .map { content =>
-          val escapedContent = StringEscapeUtils.unescapeXml(content)
-          Left(WarpException(s"HTTP status: ${httpResponse.status.intValue.toString}: $escapedContent"))
-        }
+      WarpClientUtils.readAllDataBytes(httpResponse.entity.dataBytes).map { content =>
+        val escapedContent = StringEscapeUtils.unescapeXml(content)
+        Left(WarpException(s"HTTP status: ${httpResponse.status.intValue.toString}: $escapedContent"))
+      }
     }
   }
 }

@@ -4,6 +4,7 @@ import org.specs2._
 import scala.collection.immutable.ListMap
 
 class GTSSpec extends Specification {
+
   def is = s2"""
     This is a specification to check the GTS module
 
@@ -22,7 +23,7 @@ class GTSSpec extends Specification {
       "i2" -> 20,
       "d" -> 3.2,
       "b1" -> false,
-      "b2" -> true,
+      "b2" -> true
     )
   )
   val serialized = ":m:macro:{'s' '12.12.12.12' 'i1' 10 'l' 2 'i2' 20 'd' 3.2 'b1' false 'b2' true}"
