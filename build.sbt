@@ -22,8 +22,6 @@ libraryDependencies ++= Seq(
   "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.0.0" % Test
 )
 
-bintrayOrganization := Some("clevercloud")
-
 scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
