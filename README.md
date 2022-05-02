@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/CleverCloud/akka-warp10-scala-client.svg?branch=master)](https://travis-ci.org/CleverCloud/akka-warp10-scala-client) [![Bintray Version](https://img.shields.io/bintray/v/clevercloud/maven/akka-warp10-scala-client.svg)](https://bintray.com/clevercloud/maven/akka-warp10-scala-client#)
+[![Tests](https://github.com/clevercloud/akka-warp10-scala-client/actions/workflows/ci.yml/badge.svg)](https://github.com/CleverCloud/akka-warp10-scala-client/actions/workflows/ci.yml)
 
 # Scala client for [Warp10 Geo/time series DB](http://www.warp10.io/).
 

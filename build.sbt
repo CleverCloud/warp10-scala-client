@@ -2,11 +2,13 @@ organization := """com.clevercloud"""
 
 name := """akka-warp10-scala-client"""
 
-version := "1.5.2"
+version := "1.6.6"
 
 scalaVersion := "2.13.8"
 
-crossScalaVersions := Seq("2.12.15", "2.13.8")
+versionScheme := Some("early-semver")
+
+lazy val scalatestVersion = "3.2.10"
 
 libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-text" % "1.9",
@@ -16,14 +18,11 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-core" % "0.14.1",
   "io.circe" %% "circe-generic" % "0.14.1",
   "io.circe" %% "circe-parser" % "0.14.1",
-
   "ch.qos.logback" % "logback-classic" % "1.2.11",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
-
-  "org.specs2" %% "specs2-core" % "4.13.3" % Test
+  "org.specs2" %% "specs2-core" % "4.13.3" % Test,
+  "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.0.0" % Test
 )
-
-bintrayOrganization := Some("clevercloud")
 
 scalacOptions ++= Seq(
   "-deprecation",
@@ -34,12 +33,26 @@ scalacOptions ++= Seq(
   "-language:postfixOps"
 )
 
-parallelExecution in Test := false
-
-licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))
+Test / parallelExecution := false
 
 enablePlugins(GhpagesPlugin)
 
 git.remoteRepo := "git@github.com:clevercloud/akka-warp10-scala-client.git"
 
 enablePlugins(SiteScaladocPlugin)
+
+publishTo := Some(
+  if (isSnapshot.value)
+    Opts.resolver.sonatypeSnapshots
+  else
+    Opts.resolver.sonatypeStaging
+)
+
+licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/clevercloud/akka-warp10-scala-client"),
+    "git@github.com:clevercloud/akka-warp10-scala-client.git"
+  )
+)
+developers := List(Developer("kannarfr", "Alexandre DUVAL", "kannarfr@gmail.com", url("https://alexandre-duval.fr")))
