@@ -1,7 +1,7 @@
 import com.clevercloud.testcontainers.scala.Warp10Container
-import org.scalatest.{ BeforeAndAfterAll, Suite }
+import org.specs2.specification.BeforeAfterAll
 
-trait Warp10TestContainer extends Suite with BeforeAndAfterAll {
+trait Warp10TestContainer extends BeforeAfterAll {
 
   private val warp10Version = "2.7.5"
 
@@ -13,8 +13,9 @@ trait Warp10TestContainer extends Suite with BeforeAndAfterAll {
 
   val warp10_admin_token: String = warp10_container.writeToken
 
-  override protected def afterAll(): Unit = {
+  override def beforeAll(): Unit = {}
+
+  override def afterAll(): Unit = {
     warp10_container.stop()
-    super.afterAll()
   }
 }

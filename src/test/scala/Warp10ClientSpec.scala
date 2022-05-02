@@ -1,13 +1,13 @@
 import java.time._
 import java.util.UUID
 
-import scala.concurrent.{Await, ExecutionContext}
-import scala.concurrent.duration.{Duration => Period}
+import scala.concurrent.{ Await, ExecutionContext }
+import scala.concurrent.duration.{ Duration => Period }
 import scala.concurrent.duration.MILLISECONDS
-import scala.util.{Failure, Success}
+import scala.util.{ Failure, Success }
 
 import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
+import akka.http.scaladsl.model.{ HttpRequest, HttpResponse, StatusCodes }
 import akka.stream.Materializer
 import akka.stream.scaladsl.Flow
 
@@ -17,7 +17,8 @@ import com.clevercloud.warp10client.models.gts_module._
 
 import org.specs2._
 
-class Warp10ClientSpec extends Specification {
+class Warp10ClientSpec extends Specification with Warp10TestContainer {
+
   def is = s2"""
     This is a specification to check the Warp10 client
 
@@ -48,7 +49,7 @@ class Warp10ClientSpec extends Specification {
   implicit val actorSystem = ActorSystem()
   implicit val executionContext = actorSystem.dispatcher
   implicit val actorMaterializer = Materializer.matFromSystem
-  implicit val warpConfiguration: WarpConfiguration = WarpConfiguration("http://localhost:8080")
+  implicit val warpConfiguration: WarpConfiguration = WarpConfiguration(warp10_url)
 
   // PUSH TESTS
   private def pushContext()(implicit actorMaterializer: Materializer, executionContext: ExecutionContext) = {
