@@ -1,14 +1,24 @@
-organization := """com.clevercloud"""
+inThisBuild(
+  List(
+    organization := "com.clevercloud",
+    homepage := Some(url("https://github.com/clevercloud/akka-warp10-scala-client")),
+    licenses := List("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0")),
+    developers := List(
+      Developer(
+        "kannarfr",
+        "Alexandre DUVAL",
+        "kannarfr@gmail.com",
+        url("https://alexandre-duval.fr")
+      )
+    ),
+    name := """akka-warp10-scala-client""",
+    scalaVersion := "2.13.8",
+    versionScheme := Some("early-semver")
+  )
+)
 
-name := """akka-warp10-scala-client"""
-
-version := "1.6.6"
-
-scalaVersion := "2.13.8"
-
-versionScheme := Some("early-semver")
-
-lazy val scalatestVersion = "3.2.10"
+sonatypeCredentialHost := "s01.oss.sonatype.org"
+sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
 
 libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-text" % "1.9",
@@ -40,13 +50,6 @@ enablePlugins(GhpagesPlugin)
 git.remoteRepo := "git@github.com:clevercloud/akka-warp10-scala-client.git"
 
 enablePlugins(SiteScaladocPlugin)
-
-publishTo := Some(
-  if (isSnapshot.value)
-    Opts.resolver.sonatypeSnapshots
-  else
-    Opts.resolver.sonatypeStaging
-)
 
 licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))
 scmInfo := Some(
