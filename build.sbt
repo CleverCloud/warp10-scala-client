@@ -41,8 +41,6 @@ git.remoteRepo := "git@github.com:clevercloud/akka-warp10-scala-client.git"
 
 enablePlugins(SiteScaladocPlugin)
 
-publishTo := Some("Sonatype Snapshots Nexus" at "https://oss.sonatype.org/content/repositories/snapshots")
-
 publishTo := Some(
   if (isSnapshot.value)
     Opts.resolver.sonatypeSnapshots
@@ -58,23 +56,3 @@ scmInfo := Some(
   )
 )
 developers := List(Developer("kannarfr", "Alexandre DUVAL", "kannarfr@gmail.com", url("https://alexandre-duval.fr")))
-
-resolvers += Resolver.mavenLocal
-resolvers += Resolver.defaultLocal
-resolvers += Resolver.jcenterRepo
-
-ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
-ThisBuild / githubWorkflowPublishTargetBranches := Seq(RefPredicate.StartsWith(Ref.Tag("v")))
-ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
-ThisBuild / githubWorkflowPublishTargetBranches += RefPredicate.StartsWith(Ref.Tag("v"))
-ThisBuild / githubWorkflowPublish := Seq(
-  WorkflowStep.Sbt(
-    List("ci-release"),
-    env = Map(
-      "PGP_PASSPHRASE" -> "${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}",
-      "PGP_SECRET" -> "${{ secrets.OSSRH_GPG_SECRET_KEY }}",
-      "SONATYPE_USERNAME" -> "${{ secrets.OSSRH_USERNAME }}",
-      "SONATYPE_PASSWORD" -> "${{ secrets.OSSRH_TOKEN }}"
-    )
-  )
-)
