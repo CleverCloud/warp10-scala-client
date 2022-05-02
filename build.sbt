@@ -10,17 +10,17 @@ crossScalaVersions := Seq("2.12.15", "2.13.8")
 
 libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-text" % "1.9",
-  "com.typesafe.akka" %% "akka-actor" % "2.6.18",
+  "com.typesafe.akka" %% "akka-actor" % "2.6.19",
   "com.typesafe.akka" %% "akka-http" % "10.2.7",
-  "com.typesafe.akka" %% "akka-stream" % "2.6.18",
+  "com.typesafe.akka" %% "akka-stream" % "2.6.19",
   "io.circe" %% "circe-core" % "0.14.1",
   "io.circe" %% "circe-generic" % "0.14.1",
   "io.circe" %% "circe-parser" % "0.14.1",
 
-  "ch.qos.logback" % "logback-classic" % "1.2.10",
+  "ch.qos.logback" % "logback-classic" % "1.2.11",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
 
-  "org.specs2" %% "specs2-core" % "4.13.2" % Test
+  "org.specs2" %% "specs2-core" % "4.13.3" % Test
 )
 
 bintrayOrganization := Some("clevercloud")
