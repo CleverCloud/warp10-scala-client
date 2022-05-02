@@ -48,3 +48,22 @@ inThisBuild(
 )
 enablePlugins(GhpagesPlugin)
 enablePlugins(SiteScaladocPlugin)
+
+sonatypeCredentialHost := "s01.oss.sonatype.org"
+sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
+
+ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
+ThisBuild / githubWorkflowPublishTargetBranches := Seq(RefPredicate.StartsWith(Ref.Tag("v")))
+ThisBuild / githubWorkflowPublishTargetBranches += RefPredicate.StartsWith(Ref.Tag("v"))
+ThisBuild / githubWorkflowPublish := Seq(WorkflowStep.Sbt(List("ci-release")))
+ThisBuild / githubWorkflowPublish := Seq(
+  WorkflowStep.Sbt(
+    List("ci-release"),
+    env = Map(
+      "PGP_PASSPHRASE" -> "${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}",
+      "PGP_SECRET" -> "${{ secrets.OSSRH_GPG_SECRET_KEY }}",
+      "SONATYPE_PASSWORD" -> "${{ secrets.OSSRH_TOKEN }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.OSSRH_USERNAME }}"
+    )
+  )
+)
