@@ -6,7 +6,7 @@ version := "1.5.2"
 
 scalaVersion := "2.13.8"
 
-crossScalaVersions := Seq("2.12.15", "2.13.8")
+lazy val scalatestVersion = "3.2.10"
 
 libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-text" % "1.9",
@@ -16,14 +16,11 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-core" % "0.14.1",
   "io.circe" %% "circe-generic" % "0.14.1",
   "io.circe" %% "circe-parser" % "0.14.1",
-
   "ch.qos.logback" % "logback-classic" % "1.2.11",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
-
-  "org.specs2" %% "specs2-core" % "4.13.3" % Test
+  "org.specs2" %% "specs2-core" % "4.13.3" % Test,
+  "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.0.0" % Test
 )
-
-bintrayOrganization := Some("clevercloud")
 
 scalacOptions ++= Seq(
   "-deprecation",
