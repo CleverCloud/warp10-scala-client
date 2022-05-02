@@ -43,8 +43,8 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
   val utcNow = LocalDateTime.ofInstant(zonedNow.toInstant, ZoneId.of("UTC"))
   val utcNowMilli = utcNow.atZone(ZoneId.of("UTC")).toInstant.toEpochMilli
   val utcNowStartMicro = s"${utcNowMilli}000".toLong
-  val writeToken = "writeTokenCI"
-  val readToken = "readTokenCI"
+  val writeToken = warp10_write_token
+  val readToken = warp10_read_token
 
   implicit val actorSystem = ActorSystem()
   implicit val executionContext = actorSystem.dispatcher
@@ -156,7 +156,7 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
   def f2 = Await.result(validFetch_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
 
   // PUSH 10 000 GTS to real Warp10
-  val realWarpClient = WarpClient("localhost", 8080)
+  val realWarpClient = WarpClient(warp10_host, warp10_port)
 
   // check no data
   def e1 = Await.result(
@@ -196,7 +196,7 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
         FetchRange(utcNowStartMicro - 10000000L, utcNowStartMicro)
       )
     ),
-    Period(1000, MILLISECONDS)
+    Period(10000, MILLISECONDS)
   ) must beAnInstanceOf[Right[_, _]]
 
   // private def getNbGTSPoints(gtsSeq: Seq[GTS]): Int = gtsSeq.map(_.points.size).sum
