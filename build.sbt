@@ -6,8 +6,6 @@ version := "1.5.2"
 
 scalaVersion := "2.13.8"
 
-crossScalaVersions := Seq("2.12.15", "2.13.8")
-
 lazy val scalatestVersion = "3.2.10"
 
 libraryDependencies ++= Seq(
