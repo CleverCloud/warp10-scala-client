@@ -11,7 +11,7 @@ inThisBuild(
         url("https://alexandre-duval.fr")
       )
     ),
-    version := "1.6.12",
+    version := "1.6.13",
     name := """akka-warp10-scala-client""",
     scalaVersion := "2.13.8",
     versionScheme := Some("early-semver"),
