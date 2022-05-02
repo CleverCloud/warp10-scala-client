@@ -30,7 +30,7 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser" % "0.14.1",
   "ch.qos.logback" % "logback-classic" % "1.2.11",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
-  "org.specs2" %% "specs2-core" % "4.13.3" % Test,
+  "org.specs2" %% "specs2-core" % "4.15.0" % Test,
   "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.0.0" % Test
 )
 
