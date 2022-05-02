@@ -6,6 +6,8 @@ version := "1.5.6"
 
 scalaVersion := "2.13.8"
 
+versionScheme := Some("early-semver")
+
 lazy val scalatestVersion = "3.2.10"
 
 libraryDependencies ++= Seq(
@@ -31,9 +33,7 @@ scalacOptions ++= Seq(
   "-language:postfixOps"
 )
 
-parallelExecution in Test := false
-
-licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))
+Test / parallelExecution := false
 
 enablePlugins(GhpagesPlugin)
 
@@ -42,3 +42,23 @@ git.remoteRepo := "git@github.com:clevercloud/akka-warp10-scala-client.git"
 enablePlugins(SiteScaladocPlugin)
 
 publishTo := Some("Sonatype Snapshots Nexus" at "https://oss.sonatype.org/content/repositories/snapshots")
+
+publishTo := Some(
+  if (isSnapshot.value)
+    Opts.resolver.sonatypeSnapshots
+  else
+    Opts.resolver.sonatypeStaging
+)
+
+licenses += ("Apache-2.0", url("https://www.apache.org/licenses/LICENSE-2.0"))
+scmInfo := Some(
+  ScmInfo(
+    url("https://github.com/clevercloud/akka-warp10-scala-client"),
+    "git@github.com:clevercloud/akka-warp10-scala-client.git"
+  )
+)
+developers := List(Developer("kannarfr", "Alexandre DUVAL", "kannarfr@gmail.com", url("https://alexandre-duval.fr")))
+
+resolvers += Resolver.mavenLocal
+resolvers += Resolver.defaultLocal
+resolvers += Resolver.jcenterRepo
