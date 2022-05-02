@@ -40,3 +40,5 @@ enablePlugins(GhpagesPlugin)
 git.remoteRepo := "git@github.com:clevercloud/akka-warp10-scala-client.git"
 
 enablePlugins(SiteScaladocPlugin)
+
+publishTo := Some("Sonatype Snapshots Nexus" at "https://oss.sonatype.org/content/repositories/snapshots")
