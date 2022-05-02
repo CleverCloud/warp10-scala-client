@@ -11,7 +11,7 @@ inThisBuild(
         url("https://alexandre-duval.fr")
       )
     ),
-    version := "1.6.11",
+    version := "1.6.12",
     name := """akka-warp10-scala-client""",
     scalaVersion := "2.13.8",
     versionScheme := Some("early-semver"),
@@ -60,8 +60,8 @@ ThisBuild / githubWorkflowPublish := Seq(
   WorkflowStep.Sbt(
     List("ci-release"),
     env = Map(
-      "PGP_PASSPHRASE" -> "${{ secrets.OSSRH_GPG_SECRET_KEY_PASSWORD }}",
-      "PGP_SECRET" -> "${{ secrets.OSSRH_GPG_SECRET_KEY }}",
+      "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
+      "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
       "SONATYPE_PASSWORD" -> "${{ secrets.OSSRH_TOKEN }}",
       "SONATYPE_USERNAME" -> "${{ secrets.OSSRH_USERNAME }}"
     )
