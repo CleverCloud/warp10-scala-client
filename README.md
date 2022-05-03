@@ -1,7 +1,7 @@
 [![Tests](https://github.com/clevercloud/akka-warp10-scala-client/actions/workflows/ci.yml/badge.svg)](https://github.com/CleverCloud/akka-warp10-scala-client/actions/workflows/ci.yml)
 
-[![Central Version](https://img.shields.io/maven-central/v/com.clever-cloud/akka-warp10-scala-client)](https://mvnrepository.com/artifact/com.clever-cloud/akka-warp10-scala-client)
-[![Nexus Version](https://img.shields.io/nexus/r/com.clever-cloud/akka-warp10-scala-client?server=https%3A%2F%2Fs01.oss.sonatype.org)](https://search.maven.org/artifact/com.clever-cloud/akka-warp10-scala-client)
+[![Central Version](https://img.shields.io/maven-central/v/com.clever-cloud/akka-warp10-scala-client_2.13)](https://mvnrepository.com/artifact/com.clever-cloud/akka-warp10-scala-client)
+[![Nexus Version](https://img.shields.io/nexus/r/com.clever-cloud/akka-warp10-scala-client_2.13?server=https%3A%2F%2Fs01.oss.sonatype.org)](https://search.maven.org/artifact/com.clever-cloud/akka-warp10-scala-client)
 
 # Scala client for [Warp10 Geo/time series DB](http://www.warp10.io/).
 
