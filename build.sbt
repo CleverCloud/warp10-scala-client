@@ -24,7 +24,7 @@ inThisBuild(
     libraryDependencies ++= Seq(
       "org.apache.commons" % "commons-text" % "1.9",
       "com.typesafe.akka" %% "akka-actor" % "2.6.19",
-      "com.typesafe.akka" %% "akka-http" % "10.2.9",
+      "com.typesafe.akka" %% "akka-http" % "10.2.10",
       "com.typesafe.akka" %% "akka-stream" % "2.6.19",
       "io.circe" %% "circe-core" % "0.14.2",
       "io.circe" %% "circe-generic" % "0.14.2",
