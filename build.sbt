@@ -13,7 +13,7 @@ inThisBuild(
     ),
     version := "1.6.14",
     name := """akka-warp10-scala-client""",
-    scalaVersion := "2.13.8",
+    scalaVersion := "2.13.11",
     versionScheme := Some("early-semver"),
     scmInfo := Some(
       ScmInfo(
