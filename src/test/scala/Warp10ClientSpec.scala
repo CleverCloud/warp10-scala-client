@@ -52,7 +52,11 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
   implicit val warpConfiguration: WarpConfiguration = WarpConfiguration(warp10_url)
 
   // PUSH TESTS
-  private def pushContext()(implicit actorMaterializer: Materializer, executionContext: ExecutionContext) = {
+  private def pushContext(
+    )(implicit
+      actorMaterializer: Materializer,
+      executionContext: ExecutionContext
+    ) = {
     WarpClientContext(
       poolClientFlow = {
         Flow[(HttpRequest, UUID)].mapAsync(1) {
@@ -99,7 +103,10 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
   def p4 = Await.result(fullDataFieldSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
 
   // FETCH TESTS
-  private def fetchContext()(implicit actorMaterializer: Materializer) = {
+  private def fetchContext(
+    )(implicit
+      actorMaterializer: Materializer
+    ) = {
     WarpClientContext(
       poolClientFlow = Flow[(HttpRequest, UUID)].map {
         case (httpRequest, requestKey) => {
