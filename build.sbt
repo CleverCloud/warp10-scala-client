@@ -32,7 +32,7 @@ inThisBuild(
       "ch.qos.logback" % "logback-classic" % "1.4.8",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
       "org.specs2" %% "specs2-core" % "4.20.0" % Test,
-      "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.0.0" % Test
+      "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.0.2" % Test
     ),
     scalacOptions ++= Seq(
       "-deprecation",
