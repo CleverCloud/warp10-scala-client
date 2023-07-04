@@ -13,7 +13,7 @@ inThisBuild(
     ),
     version := "1.6.14",
     name := """akka-warp10-scala-client""",
-    scalaVersion := "2.13.8",
+    scalaVersion := "2.13.11",
     versionScheme := Some("early-semver"),
     scmInfo := Some(
       ScmInfo(
@@ -22,16 +22,16 @@ inThisBuild(
       )
     ),
     libraryDependencies ++= Seq(
-      "org.apache.commons" % "commons-text" % "1.9",
+      "org.apache.commons" % "commons-text" % "1.10.0",
       "com.typesafe.akka" %% "akka-actor" % "2.6.19",
       "com.typesafe.akka" %% "akka-http" % "10.2.9",
       "com.typesafe.akka" %% "akka-stream" % "2.6.19",
       "io.circe" %% "circe-core" % "0.14.2",
       "io.circe" %% "circe-generic" % "0.14.2",
       "io.circe" %% "circe-parser" % "0.14.2",
-      "ch.qos.logback" % "logback-classic" % "1.4.0",
+      "ch.qos.logback" % "logback-classic" % "1.4.8",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
-      "org.specs2" %% "specs2-core" % "4.16.1" % Test,
+      "org.specs2" %% "specs2-core" % "4.20.0" % Test,
       "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.0.0" % Test
     ),
     scalacOptions ++= Seq(
