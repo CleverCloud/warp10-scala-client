@@ -47,7 +47,10 @@ object WarpClient {
     )
   }
 
-  def closePool()(implicit actorSystem: ActorSystem) = {
+  def closePool(
+    )(implicit
+      actorSystem: ActorSystem
+    ) = {
     Http().shutdownAllConnectionPools
   }
 }
