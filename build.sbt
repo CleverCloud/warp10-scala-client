@@ -31,7 +31,7 @@ inThisBuild(
       "io.circe" %% "circe-parser" % "0.14.5",
       "ch.qos.logback" % "logback-classic" % "1.4.8",
       "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
-      "org.specs2" %% "specs2-core" % "4.20.0" % Test,
+      "org.specs2" %% "specs2-core" % "4.20.2" % Test,
       "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.0.2" % Test
     ),
     scalacOptions ++= Seq(
