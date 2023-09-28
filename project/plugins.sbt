@@ -4,4 +4,4 @@ addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.3")
 
 addSbtPlugin("com.github.sbt" % "sbt-ci-release" % "1.5.10")
 
-addSbtPlugin("com.codecommit" % "sbt-github-actions" % "0.14.2")
+addSbtPlugin("com.github.sbt" % "sbt-github-actions" % "0.17.0")
