@@ -7,7 +7,7 @@
 
 ## Documentation
 
-Scaladoc is available [here](https://clevercloud.github.io/warp10-scala-client/latest/api/index.html).
+Scaladoc is available [here](https://clevercloud.github.io/warp10-scala-client/latest/api/).
 
 ```scala
 // to generate documentation on gh-pages branch
