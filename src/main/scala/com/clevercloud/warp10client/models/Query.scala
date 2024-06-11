@@ -44,22 +44,22 @@ case class LabelSelector(key: String, value: String) extends Serializable {
 sealed trait FetchRange extends Serializable
 
 object FetchRange {
-  def apply(start: LocalDateTime, end: LocalDateTime) = StartStopRange(start, end)
-  def apply(now: LocalDateTime, range: Duration) = RangeBefore(now, range)
-  def apply(now: LocalDateTime, limit: Long) = RecordsSince(now, limit)
-  def apply(now: Long, limit: Long) = StartStopRangeMicros(now, limit)
+  def apply(start: LocalDateTime, end: LocalDateTime): StartStopRange = StartStopRange(start, end)
+  def apply(now: LocalDateTime, range: Duration): RangeBefore = RangeBefore(now, range)
+  def apply(now: LocalDateTime, limit: Long): RecordsSince = RecordsSince(now, limit)
+  def apply(now: Long, limit: Long): StartStopRangeMicros = StartStopRangeMicros(now, limit)
 }
 
 case class StartStopRange(start: LocalDateTime, stop: LocalDateTime) extends FetchRange {
   override def serialize: String = s"start=${oldestDate}Z&stop=${newestDate}Z"
-  def oldestDate = if (start isBefore stop) start else stop
-  def newestDate = if (start isBefore stop) stop else start
+  private def oldestDate = if (start.isBefore(stop)) start else stop
+  private def newestDate = if (start.isBefore(stop)) stop else start
 }
 
 case class StartStopRangeMicros(start: Long, stop: Long) extends FetchRange {
   override def serialize: String = s"start=${oldestDate}&stop=${newestDate}"
-  def oldestDate = if (start < stop) start else stop
-  def newestDate = if (start < stop) stop else start
+  private def oldestDate = if (start < stop) start else stop
+  private def newestDate = if (start < stop) stop else start
 }
 
 case class RangeBefore(now: LocalDateTime, range: Duration) extends FetchRange {

@@ -4,9 +4,10 @@ import java.util.UUID
 import scala.concurrent.Future
 import scala.util.{ Failure, Success }
 
-import akka.NotUsed
-import akka.http.scaladsl.model._
-import akka.stream.scaladsl.Flow
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.http.scaladsl.model._
+import pekko.stream.scaladsl.Flow
 import com.typesafe.scalalogging.Logger
 import org.apache.commons.text.StringEscapeUtils
 import org.slf4j.LoggerFactory
@@ -25,7 +26,7 @@ object Fetcher {
     val uuid = UUID.randomUUID
     Flow[Query[FetchRange]]
       .map(query => fetchRequest(readToken, query))
-      .map(request => (request -> uuid)) // cf. https://doc.akka.io/docs/akka-http/current/client-side/host-level.html
+      .map(request => (request -> uuid)) // cf. https://doc.pekko.io/docs/pekko-http/current/client-side/host-level.html
       .via(warpClientContext.poolClientFlow)
       .filter({ case (_, key) => key == uuid })
       .map({ case (responseTry, _) => responseTry })

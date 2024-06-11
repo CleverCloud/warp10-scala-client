@@ -54,14 +54,14 @@ object gts_module {
   }
 
   object GTS {
-    private val gtsRegex = "([^/]*)/([^/]*:[^/]*)?/([^ ]*) ([^ ]*)\\{([^}]*)\\} (.*)".r
+    private val gtsRegex = "([^/]*)/([^/]*:[^/]*)?/([^ ]*) ([^ ]*)\\{([^}]*)} (.*)".r
 
     def parse(input: String): Either[List[InvalidGTSFormat], List[GTS]] = {
       val unparsedGTSList: List[String] = input.split("\n(?=[^=])").toList // split in GTS List
 
-      unparsedGTSList.map(parseGTS(_)).partition(_.isLeft) match {
-        case (Nil, gts) => Right(for (Right(i) <- gts) yield i)
-        case (err, _)   => Left(for (Left(s) <- err) yield s)
+      unparsedGTSList.map(parseGTS).partition(_.isLeft) match {
+        case (Nil, gts) => Right(for (case Right(i) <- gts) yield i)
+        case (err, _)   => Left(for (case Left(s) <- err) yield s)
       }
     }
 
@@ -234,7 +234,7 @@ object gts_module {
         if (optionalDecodedKeyAndValueAsPairSeq.contains(None)) {
           Left(InvalidGTSLabelsFormat)
         } else {
-          Right(Map(optionalDecodedKeyAndValueAsPairSeq.map(_.get): _*))
+          Right(Map(optionalDecodedKeyAndValueAsPairSeq.map(_.get)*))
         }
       } else {
         Left(InvalidGTSLabelsFormat)
@@ -244,8 +244,8 @@ object gts_module {
     }
   }
 
-  private def parseLong = parseWithExceptionCatching(_.toLong) _
-  private def parseDouble = parseWithExceptionCatching(_.toDouble) _
+  private def parseLong = parseWithExceptionCatching(_.toLong)
+  private def parseDouble = parseWithExceptionCatching(_.toDouble)
 
   private def parseWithExceptionCatching[A](
       map: String => A
