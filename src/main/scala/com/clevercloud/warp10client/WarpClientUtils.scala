@@ -2,13 +2,14 @@ package com.clevercloud.warp10client
 
 import java.util.UUID
 
-import akka.NotUsed
-import akka.actor.ActorSystem
-import akka.http.scaladsl.model.HttpHeader.ParsingResult
-import akka.http.scaladsl.model._
-import akka.stream.Materializer
-import akka.stream.scaladsl.{ Flow, Source }
-import akka.util.ByteString
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.ActorSystem
+import pekko.http.scaladsl.model.HttpHeader.ParsingResult
+import pekko.http.scaladsl.model._
+import pekko.stream.Materializer
+import pekko.stream.scaladsl.{ Flow, Source }
+import pekko.util.ByteString
 import com.clevercloud.warp10client.WarpClientUtils.PoolClientFlow
 import com.clevercloud.warp10client.models.WarpConfiguration
 
@@ -16,14 +17,14 @@ import scala.concurrent.{ ExecutionContext, Future }
 import scala.util.Try
 
 object WarpClientUtils {
-  type PoolClientFlow = Flow[(HttpRequest, UUID), (Try[HttpResponse], UUID), _]
+  type PoolClientFlow = Flow[(HttpRequest, UUID), (Try[HttpResponse], UUID), ?]
 
   def readAllDataBytes(
-      dataBytesSource: Source[ByteString, _]
+      dataBytesSource: Source[ByteString, ?]
     )(implicit
       actorMaterializer: Materializer
     ): Future[String] = {
-    implicit val executionContext = actorMaterializer.system.dispatcher
+    given executionContext: ExecutionContext = actorMaterializer.system.dispatcher
     dataBytesSource.runFold(ByteString.empty)({ case (seq, item) => seq ++ item }).map(_.decodeString("UTF-8"))
   }
 

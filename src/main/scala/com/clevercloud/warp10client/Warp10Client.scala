@@ -2,11 +2,12 @@ package com.clevercloud.warp10client
 
 import java.util.UUID
 
-import akka.NotUsed
-import akka.actor.ActorSystem
-import akka.http.scaladsl.Http
-import akka.stream.Materializer
-import akka.stream.scaladsl.{ Flow, Sink, Source }
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.actor.ActorSystem
+import pekko.http.scaladsl.Http
+import pekko.stream.Materializer
+import pekko.stream.scaladsl.{ Flow, Sink, Source }
 import com.clevercloud.warp10client.Runner.WarpScript
 import com.clevercloud.warp10client.models._
 import com.clevercloud.warp10client.models.gts_module.GTS
@@ -24,7 +25,7 @@ object WarpClient {
       warpConfiguration: WarpConfiguration,
       actorSystem: ActorSystem,
       actorMaterializer: Materializer
-    ): WarpClient = {
+    ): Warp10Client = {
     if (scheme.equals("http")) {
       WarpClient(Http().cachedHostConnectionPool[UUID](host, port))
     } else {
@@ -37,8 +38,8 @@ object WarpClient {
     )(implicit
       warpConfiguration: WarpConfiguration,
       actorMaterializer: Materializer
-    ): WarpClient = {
-    new WarpClient(
+    ): Warp10Client = {
+    new Warp10Client(
       WarpClientContext(
         warpConfiguration,
         poolClientFlow,
@@ -50,12 +51,12 @@ object WarpClient {
   def closePool(
     )(implicit
       actorSystem: ActorSystem
-    ) = {
-    Http().shutdownAllConnectionPools
+    ): Future[Unit] = {
+    Http().shutdownAllConnectionPools()
   }
 }
 
-class WarpClient(warpContext: WarpClientContext) {
+class Warp10Client(warpContext: WarpClientContext) {
   import warpContext._
 
   def fetch(readToken: String): Flow[Query[FetchRange], Future[Either[WarpException, Seq[GTS]]], NotUsed] =

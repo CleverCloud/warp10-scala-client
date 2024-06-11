@@ -4,9 +4,10 @@ import java.util.UUID
 
 import scala.util.{ Failure, Success, Try }
 
-import akka.NotUsed
-import akka.http.scaladsl.model._
-import akka.stream.scaladsl.{ Flow, Source }
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.http.scaladsl.model._
+import pekko.stream.scaladsl.{ Flow, Source }
 
 import io.circe._
 import io.circe.parser._
@@ -23,15 +24,15 @@ object Runner {
     val uuid = UUID.randomUUID
     Flow[WarpScript]
       .map(script => execRequest(script))
-      .map(request => (request -> uuid)) // cf. https://doc.akka.io/docs/akka-http/current/client-side/host-level.html
+      .map(request => (request -> uuid))
       .via(warpClientContext.poolClientFlow)
       .filter({ case (_, key) => key == uuid })
       .map({ case (responseTry, _) => responseTry })
       .via(processResponseTry)
-      .via(jsonToGTSSeq)
+      .via(jsonToGTSSeq())
   }
 
-  def execRequest(
+  private def execRequest(
       script: WarpScript
     )(implicit
       warpClientContext: WarpClientContext

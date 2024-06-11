@@ -1,14 +1,13 @@
-[![Tests](https://github.com/clevercloud/akka-warp10-scala-client/actions/workflows/ci.yml/badge.svg)](https://github.com/CleverCloud/akka-warp10-scala-client/actions/workflows/ci.yml)
+[![Tests](https://github.com/clevercloud/warp10-scala-client/actions/workflows/ci.yml/badge.svg)](https://github.com/CleverCloud/warp10-scala-client/actions/workflows/ci.yml)
 
-[![Central Version](https://img.shields.io/maven-central/v/com.clever-cloud/akka-warp10-scala-client_2.13)](https://mvnrepository.com/artifact/com.clever-cloud/akka-warp10-scala-client)
-[![Nexus Version](https://img.shields.io/nexus/r/com.clever-cloud/akka-warp10-scala-client_2.13?server=https%3A%2F%2Fs01.oss.sonatype.org)](https://search.maven.org/artifact/com.clever-cloud/akka-warp10-scala-client)
+[![Central Version](https://img.shields.io/maven-central/v/com.clever-cloud/warp10-scala-client_3)](https://mvnrepository.com/artifact/com.clever-cloud/warp10-scala-client)
 
 # Scala client for [Warp10 Geo/time series DB](http://www.warp10.io/).
 
 
 ## Documentation
 
-Scaladoc is available [here](https://clevercloud.github.io/akka-warp10-scala-client/latest/api/index.html).
+Scaladoc is available [here](https://clevercloud.github.io/warp10-scala-client/latest/api/index.html).
 
 ```scala
 // to generate documentation on gh-pages branch
@@ -20,23 +19,25 @@ sbt ghpagesPushSite
 Add the library dependency:
 
 ```scala
-"com.clever-cloud" %% "akka-warp10-scala-client" % "<version>"
+"com.clever-cloud" %% "warp10-scala-client" % "<version>"
 ```
 
 ## Configuration
 
 ```scala
-import akka.actor._
-import akka.stream.Materializer
+import scala.concurrent.ExecutionContext
+
+import org.apache.pekko
+import pekko.actor._
+import pekko.stream.Materializer
 
 import com.clevercloud.warp10client._
 import com.clevercloud.warp10client.models._
 import com.clevercloud.warp10client.models.gts_module._
 
-implicit val executionContext = system.dispatchers.lookup("yourContext")
-implicit val actorMaterializer = Materializer.matFromSystem
-implicit val warpConfiguration = WarpConfiguration("www.clever-cloud.com")
-val warpClient = WarpClient("clever-cloud.com", 80)
+given executionContext: ExecutionContext = system.dispatchers.lookup("yourContext")
+given warpConfiguration: WarpConfiguration = WarpConfiguration("www.clever-cloud.com")
+val warpClient = Warp10Client("clever-cloud.com", 80)
 ```
 
 ## Classical usage
@@ -72,7 +73,7 @@ warpClient.push(gts: GTS, "WRITE_TOKEN")
 warpClient.push(gts: Seq[GTS], "WRITE_TOKEN", batchSize = 300)
 ```
 
-## Akka Streams usage
+## Pekko Streams usage
 
 ```scala
 Flow[Query[FetchRange]]

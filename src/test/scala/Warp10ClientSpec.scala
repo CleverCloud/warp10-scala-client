@@ -1,21 +1,19 @@
-import java.time._
+import java.time.*
 import java.util.UUID
-
-import scala.concurrent.{ Await, ExecutionContext }
-import scala.concurrent.duration.{ Duration => Period }
+import scala.concurrent.{Await, ExecutionContext, Future}
+import scala.concurrent.duration.Duration as Period
 import scala.concurrent.duration.MILLISECONDS
-import scala.util.{ Failure, Success }
-
-import akka.actor.ActorSystem
-import akka.http.scaladsl.model.{ HttpRequest, HttpResponse, StatusCodes }
-import akka.stream.Materializer
-import akka.stream.scaladsl.Flow
-
-import com.clevercloud.warp10client._
-import com.clevercloud.warp10client.models._
-import com.clevercloud.warp10client.models.gts_module._
-
-import org.specs2._
+import scala.util.{Failure, Success}
+import org.apache.pekko
+import pekko.actor.ActorSystem
+import pekko.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
+import pekko.stream.Materializer
+import pekko.stream.scaladsl.Flow
+import com.clevercloud.warp10client.*
+import com.clevercloud.warp10client.models.*
+import com.clevercloud.warp10client.models.gts_module.*
+import org.specs2.*
+import org.specs2.matcher.MatchResult
 
 class Warp10ClientSpec extends Specification with Warp10TestContainer {
 
@@ -39,17 +37,16 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
       Seq[GTS] contains data -> on fetch success                      $e2
   """
 
-  val zonedNow = ZonedDateTime.now
-  val utcNow = LocalDateTime.ofInstant(zonedNow.toInstant, ZoneId.of("UTC"))
-  val utcNowMilli = utcNow.atZone(ZoneId.of("UTC")).toInstant.toEpochMilli
-  val utcNowStartMicro = s"${utcNowMilli}000".toLong
-  val writeToken = warp10_write_token
-  val readToken = warp10_read_token
+  val zonedNow: ZonedDateTime = ZonedDateTime.now
+  val utcNow: LocalDateTime = LocalDateTime.ofInstant(zonedNow.toInstant, ZoneId.of("UTC"))
+  val utcNowMilli: Long = utcNow.atZone(ZoneId.of("UTC")).toInstant.toEpochMilli
+  val utcNowStartMicro: Long = s"${utcNowMilli}000".toLong
+  val writeToken: String = warp10_write_token
+  val readToken: String = warp10_read_token
 
-  implicit val actorSystem = ActorSystem()
-  implicit val executionContext = actorSystem.dispatcher
-  implicit val actorMaterializer = Materializer.matFromSystem
-  implicit val warpConfiguration: WarpConfiguration = WarpConfiguration(warp10_url)
+  given actorSystem: ActorSystem = ActorSystem()
+  given executionContext: ExecutionContext = actorSystem.dispatcher
+  given warpConfiguration: WarpConfiguration = WarpConfiguration(warp10_url)
 
   // PUSH TESTS
   private def pushContext(
@@ -80,27 +77,27 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
     )
   }
 
-  val wPushClient = new WarpClient(pushContext)
+  val wPushClient = new Warp10Client(pushContext())
 
-  val gtsPointSeq1 = Seq(GTSPoint(Some(1.toLong), None, None, GTSLongValue(73346576)))
-  val validSend_f = wPushClient.push(GTS("testClass", Map.empty[String, String], gtsPointSeq1), writeToken)
-  def p1 = Await.result(validSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
+  val gtsPointSeq1: Seq[GTSPoint] = Seq(GTSPoint(Some(1.toLong), None, None, GTSLongValue(73346576)))
+  val validSend_f: Future[Either[WarpException, Unit]] = wPushClient.push(GTS("testClass", Map.empty[String, String], gtsPointSeq1), writeToken)
+  def p1 = Await.result(validSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[?, ?]]
 
-  val gtsPointSeq2 = Seq(GTSPoint(None, None, None, GTSLongValue(7)))
+  val gtsPointSeq2: Seq[GTSPoint] = Seq(GTSPoint(None, None, None, GTSLongValue(7)))
 
-  val invalidTokenSend_f = wPushClient.push(
+  val invalidTokenSend_f: Future[Either[WarpException, Unit]] = wPushClient.push(
     GTS("testFailClass{}", Map("label1" -> "dsfF3", "label2" -> "dsfg"), gtsPointSeq2),
     "invalid_write_token"
   )
-  def p2 = Await.result(invalidTokenSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Left[_, _]]
+  def p2 = Await.result(invalidTokenSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Left[?, ?]]
 
-  val gtsPointSeq4 = Seq(
+  val gtsPointSeq4: Seq[GTSPoint] = Seq(
     GTSPoint(Some(4.toLong), Some(Coordinates(1.0.toDouble, -0.1.toDouble)), Some(1.toLong), GTSStringValue("string"))
   )
 
-  val fullDataFieldSend_f =
+  val fullDataFieldSend_f: Future[Either[WarpException, Unit]] =
     wPushClient.push(GTS("testFullDataField", Map("lbl1" -> "test", "lbl2" -> "test"), gtsPointSeq4), writeToken)
-  def p4 = Await.result(fullDataFieldSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
+  def p4 = Await.result(fullDataFieldSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[?, ?]]
 
   // FETCH TESTS
   private def fetchContext(
@@ -142,9 +139,9 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
     )
   }
 
-  val wFetchClient = new WarpClient(fetchContext)
+  val wFetchClient = new Warp10Client(fetchContext())
 
-  val gtsPointForSeq = Seq(
+  val gtsPointForSeq: Seq[GTSPoint] = Seq(
     GTSPoint(Some(1434590504.toLong), None, None, GTSDoubleValue(-0.6133061918698982.toDouble)),
     GTSPoint(Some(1434590288.toLong), None, None, GTSDoubleValue(0.9228427144511169.toDouble)),
     GTSPoint(Some(1434590072.toLong), None, None, GTSDoubleValue(-0.1301889411087915.toDouble))
@@ -156,17 +153,17 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
     GTS("test", Map("steps" -> "103"), gtsPointForSeq)
   )
 
-  val failFetch_f = wFetchClient.fetch(readToken, Query(Selector("fail"), FetchRange(utcNow, 1000.toLong)))
-  def f1 = Await.result(failFetch_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Left[_, _]]
+  val failFetch_f: Future[Either[WarpException, Seq[GTS]]] = wFetchClient.fetch(readToken, Query(Selector("fail"), FetchRange(utcNow, 1000.toLong)))
+  def f1: MatchResult[Either[WarpException, Seq[GTS]]] = Await.result(failFetch_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Left[?, ?]]
 
-  val validFetch_f = wFetchClient.fetch(readToken, Query(Selector("test"), FetchRange(utcNow, 1000.toLong)))
-  def f2 = Await.result(validFetch_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
+  val validFetch_f: Future[Either[WarpException, Seq[GTS]]] = wFetchClient.fetch(readToken, Query(Selector("test"), FetchRange(utcNow, 1000.toLong)))
+  def f2: MatchResult[Either[WarpException, Seq[GTS]]] = Await.result(validFetch_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[?, ?]]
 
   // PUSH 10 000 GTS to real Warp10
-  val realWarpClient = WarpClient(warp10_host, warp10_port)
+  val realWarpClient: Warp10Client = WarpClient(warp10_host, warp10_port)
 
   // check no data
-  def e1 = Await.result(
+  def e1: MatchResult[Either[WarpException, Seq[GTS]]] = Await.result(
     realWarpClient.fetch(
       readToken,
       Query(
@@ -175,7 +172,7 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
       )
     ),
     Period(10000, MILLISECONDS)
-  ) must beAnInstanceOf[Right[_, _]]
+  ) must beAnInstanceOf[Right[?, ?]]
 
   // push 3000 points
   val realSeqRangedFetch: Seq[GTS] = (1 to 3000) map { i =>
@@ -186,16 +183,16 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
     )
   }
 
-  val validHugePush_p = realWarpClient.push(realSeqRangedFetch, writeToken)
-  def p5 = Await.result(validHugePush_p, Period(100000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
+  val validHugePush_p: Future[Either[WarpException, Unit]] = realWarpClient.push(realSeqRangedFetch, writeToken)
+  def p5: MatchResult[Either[WarpException, Unit]] = Await.result(validHugePush_p, Period(100000, MILLISECONDS)) must beAnInstanceOf[Right[?, ?]]
 
-  val gtsPointSeq6 = Seq(
+  val gtsPointSeq6: Seq[GTSPoint] = Seq(
     GTSPoint(Some(1.toLong), Some(Coordinates(lat = 3.333, lon = 4.444)), None, GTSLongValue(73346576))
   )
-  val invalidSend6 = realWarpClient.push(GTS("testClass", Map.empty[String, String], gtsPointSeq6), writeToken)
-  def p6 = Await.result(invalidSend6, Period(10000, MILLISECONDS)) must beAnInstanceOf[Right[_, _]]
+  val invalidSend6: Future[Either[WarpException, Unit]] = realWarpClient.push(GTS("testClass", Map.empty[String, String], gtsPointSeq6), writeToken)
+  def p6: MatchResult[Either[WarpException, Unit]] = Await.result(invalidSend6, Period(10000, MILLISECONDS)) must beAnInstanceOf[Right[?, ?]]
 
-  def e2 = Await.result(
+  def e2: MatchResult[Either[WarpException, Seq[GTS]]] = Await.result(
     realWarpClient.fetch(
       readToken,
       Query(
@@ -204,7 +201,7 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
       )
     ),
     Period(10000, MILLISECONDS)
-  ) must beAnInstanceOf[Right[_, _]]
+  ) must beAnInstanceOf[Right[?, ?]]
 
   // private def getNbGTSPoints(gtsSeq: Seq[GTS]): Int = gtsSeq.map(_.points.size).sum
 

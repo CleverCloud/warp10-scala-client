@@ -5,9 +5,10 @@ import java.util.UUID
 import scala.concurrent.Future
 import scala.util.{ Failure, Success }
 
-import akka.NotUsed
-import akka.http.scaladsl.model._
-import akka.stream.scaladsl.Flow
+import org.apache.pekko
+import pekko.NotUsed
+import pekko.http.scaladsl.model._
+import pekko.stream.scaladsl.Flow
 
 import org.apache.commons.lang3.StringEscapeUtils
 
@@ -23,7 +24,7 @@ object Pusher {
     val uuid = UUID.randomUUID
     Flow[GTS]
       .map(gts => pushRequest(gts, writeToken))
-      .map(request => (request -> uuid)) // cf. https://doc.akka.io/docs/akka-http/current/client-side/host-level.html
+      .map(request => (request -> uuid)) // cf. https://doc.pekko.io/docs/pekko-http/current/client-side/host-level.html
       .via(warpClientContext.poolClientFlow)
       .filter({ case (_, key) => key == uuid })
       .map({ case (responseTry, _) => responseTry })
@@ -41,7 +42,7 @@ object Pusher {
     val uuid = UUID.randomUUID
     Flow[Seq[GTS]]
       .map(gtsSeq => pushSeqRequest(gtsSeq, writeToken))
-      .map(request => (request -> uuid)) // cf. https://doc.akka.io/docs/akka-http/current/client-side/host-level.html
+      .map(request => (request -> uuid)) // cf. https://doc.pekko.io/docs/pekko-http/current/client-side/host-level.html
       .via(warpClientContext.poolClientFlow)
       .filter({ case (_, key) => key == uuid })
       .map({ case (responseTry, _) => responseTry })
