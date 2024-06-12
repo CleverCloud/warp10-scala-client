@@ -23,7 +23,7 @@ ThisBuild / scmInfo := Some(
   )
 )
 ThisBuild / libraryDependencies ++= Seq(
-  "org.apache.commons" % "commons-text" % "1.10.0",
+  "org.apache.commons" % "commons-text" % "1.12.0",
   "org.apache.pekko" %% "pekko-actor" % pekkoVersion,
   "org.apache.pekko" %% "pekko-stream" % pekkoVersion,
   "org.apache.pekko" %% "pekko-http" % pekkoHttpVersion,
@@ -65,7 +65,6 @@ ThisBuild / githubWorkflowPublish := Seq(
   )
 )
 
-lazy val root = (project in file("."))
-  .settings(
-    name := "warp10-scala-client"
-  )
+lazy val root = (project in file(".")).settings(
+  name := "warp10-scala-client"
+)
