@@ -30,7 +30,7 @@ ThisBuild / libraryDependencies ++= Seq(
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
-  "ch.qos.logback" % "logback-classic" % "1.5.2",
+  "ch.qos.logback" % "logback-classic" % "1.5.6",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
   "org.specs2" %% "specs2-core" % "4.20.2" % Test,
   "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.1.0" % Test
@@ -65,7 +65,6 @@ ThisBuild / githubWorkflowPublish := Seq(
   )
 )
 
-lazy val root = (project in file("."))
-  .settings(
-    name := "warp10-scala-client"
-  )
+lazy val root = (project in file(".")).settings(
+  name := "warp10-scala-client"
+)
