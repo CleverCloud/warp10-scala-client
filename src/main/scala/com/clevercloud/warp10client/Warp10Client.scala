@@ -1,15 +1,14 @@
 package com.clevercloud.warp10client
 
 import java.util.UUID
-
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.actor.ActorSystem
 import pekko.http.scaladsl.Http
 import pekko.stream.Materializer
 import pekko.stream.scaladsl.{ Flow, Sink, Source }
-import com.clevercloud.warp10client.Runner.WarpScript
-import com.clevercloud.warp10client.models._
+import com.clevercloud.warp10client.Runner.{ WarpScript, jsonToGTSSeq, jsonToStack }
+import com.clevercloud.warp10client.models.*
 import com.clevercloud.warp10client.models.gts_module.GTS
 
 import scala.concurrent.Future
@@ -104,7 +103,10 @@ class Warp10Client(warpContext: WarpClientContext) {
       .flatten
   }
 
-  def exec: Flow[WarpScript, Seq[GTS], NotUsed] = Runner.exec()(warpContext)
+  def exec: Flow[WarpScript, Seq[GTS], NotUsed] = Runner.exec()(warpContext).via(jsonToGTSSeq())
+  def execStack: Flow[WarpScript, Warp10Stack, NotUsed] = Runner.exec()(warpContext).via(jsonToStack())
+
+  def execStack(script: WarpScript): Future[Warp10Stack] = Source.single(script).via(execStack).runWith(Sink.head)
 
   def exec(script: WarpScript): Future[Seq[GTS]] = {
     Source.single(script).via(exec).runWith(Sink.head)
