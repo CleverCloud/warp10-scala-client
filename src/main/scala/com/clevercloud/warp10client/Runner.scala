@@ -1,18 +1,16 @@
 package com.clevercloud.warp10client
 
+import com.clevercloud.warp10client.models.Warp10Stack
+
 import java.util.UUID
-
 import scala.util.{ Failure, Success, Try }
-
 import org.apache.pekko
 import pekko.NotUsed
-import pekko.http.scaladsl.model._
+import pekko.http.scaladsl.model.*
 import pekko.stream.scaladsl.{ Flow, Source }
-
-import io.circe._
-import io.circe.parser._
-
-import com.clevercloud.warp10client.models.gts_module._
+import io.circe.*
+import io.circe.parser.*
+import com.clevercloud.warp10client.models.gts_module.*
 
 object Runner {
   type WarpScript = String
@@ -20,7 +18,7 @@ object Runner {
   def exec(
     )(implicit
       warpClientContext: WarpClientContext
-    ): Flow[WarpScript, Seq[GTS], NotUsed] = {
+    ): Flow[WarpScript, String, NotUsed] = {
     val uuid = UUID.randomUUID
     Flow[WarpScript]
       .map(script => execRequest(script))
@@ -29,7 +27,6 @@ object Runner {
       .filter({ case (_, key) => key == uuid })
       .map({ case (responseTry, _) => responseTry })
       .via(processResponseTry)
-      .via(jsonToGTSSeq())
   }
 
   private def execRequest(
@@ -149,4 +146,6 @@ object Runner {
           .toSeq
       }
   }
+
+  def jsonToStack(): Flow[String, Warp10Stack, NotUsed] = Flow[String].via(parseJson).map(Warp10Stack.apply)
 }
