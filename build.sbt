@@ -1,5 +1,5 @@
 lazy val circeVersion = "0.14.6"
-lazy val pekkoVersion = "1.0.2"
+lazy val pekkoVersion = "1.0.3"
 lazy val pekkoHttpVersion = "1.0.1"
 
 ThisBuild / organization := "com.clever-cloud"
@@ -65,7 +65,6 @@ ThisBuild / githubWorkflowPublish := Seq(
   )
 )
 
-lazy val root = (project in file("."))
-  .settings(
-    name := "warp10-scala-client"
-  )
+lazy val root = (project in file(".")).settings(
+  name := "warp10-scala-client"
+)
