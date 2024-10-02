@@ -1,6 +1,6 @@
 lazy val circeVersion = "0.14.9"
 lazy val pekkoVersion = "1.0.3"
-lazy val pekkoHttpVersion = "1.0.1"
+lazy val pekkoHttpVersion = "1.1.0"
 
 ThisBuild / organization := "com.clever-cloud"
 ThisBuild / homepage := Some(url("https://github.com/clevercloud/warp10-scala-client"))
