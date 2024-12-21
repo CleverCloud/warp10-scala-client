@@ -33,7 +33,7 @@ ThisBuild / libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.5.2",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
   "org.specs2" %% "specs2-core" % "4.20.2" % Test,
-  "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.1.0" % Test
+  "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.1.2" % Test
 )
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
