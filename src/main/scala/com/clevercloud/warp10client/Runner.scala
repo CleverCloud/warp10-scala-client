@@ -33,13 +33,11 @@ object Runner {
       script: WarpScript
     )(implicit
       warpClientContext: WarpClientContext
-    ) = {
-    HttpRequest(
-      method = HttpMethods.POST,
-      uri = warpClientContext.configuration.execUrl,
-      entity = HttpEntity(script)
-    )
-  }
+    ) = HttpRequest(
+    method = HttpMethods.POST,
+    uri = warpClientContext.configuration.execUrl,
+    entity = HttpEntity(script)
+  )
 
   def processResponseTry(
       implicit
@@ -91,7 +89,7 @@ object Runner {
             GTS(
               classname = `class`,
               labels = labels,
-              points = (series \\ "v").map { seriesContentArrays => // [[point_1], [point_2], ...]
+              points = (series \\ "v").flatMap { seriesContentArrays => // [[point_1], [point_2], ...]
                 seriesContentArrays.asArray.get.map { point => // [point_i]
                   point.asArray.get match { // [timestamp, lat, lon, elev, value] is point's content
                     case Vector(timestamp: Json, value: Json) => {
@@ -101,7 +99,7 @@ object Runner {
                         None,
                         GTSValue.parse(value) match {
                           case Right(gtsPoint) => gtsPoint
-                          case Left(e)         => GTSStringValue(s"${e.toString}: ${value.toString}.")
+                          case Left(e) => GTSStringValue(s"${e.toString}: ${value.toString}.")
                         }
                       )
                     }
@@ -112,7 +110,7 @@ object Runner {
                         elevation.asNumber.get.toLong,
                         GTSValue.parse(value) match {
                           case Right(gtsPoint) => gtsPoint
-                          case Left(e)         => GTSStringValue(s"${e.toString}: ${value.toString}.")
+                          case Left(e) => GTSStringValue(s"${e.toString}: ${value.toString}.")
                         }
                       )
                     }
@@ -123,7 +121,7 @@ object Runner {
                         None,
                         GTSValue.parse(value) match {
                           case Right(gtsPoint) => gtsPoint
-                          case Left(e)         => GTSStringValue(s"${e.toString}: ${value.toString}.")
+                          case Left(e) => GTSStringValue(s"${e.toString}: ${value.toString}.")
                         }
                       )
                     }
@@ -134,13 +132,14 @@ object Runner {
                         elevation.asNumber.get.toLong,
                         GTSValue.parse(value) match {
                           case Right(gtsPoint) => gtsPoint
-                          case Left(e)         => GTSStringValue(s"${e.toString}: ${value.toString}.")
+                          case Left(e) => GTSStringValue(s"${e.toString}: ${value.toString}.")
                         }
                       )
                     }
+                    case _ => throw WarpException("invalid datapoint")
                   }
                 }
-              }.toSeq.flatten
+              }
             )
           }
           .toSeq
