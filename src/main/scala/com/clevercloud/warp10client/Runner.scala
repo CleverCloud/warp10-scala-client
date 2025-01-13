@@ -12,6 +12,8 @@ import io.circe.*
 import io.circe.parser.*
 import com.clevercloud.warp10client.models.gts_module.*
 
+import scala.concurrent.Future
+
 object Runner {
   type WarpScript = String
 
@@ -48,20 +50,31 @@ object Runner {
     import warpClientContext._
 
     Flow[Try[HttpResponse]].flatMapConcat {
-      case Success(httpResponse) => {
-        if (httpResponse.status == StatusCodes.OK) {
-          Source.future(
-            WarpClientUtils.readAllDataBytes(httpResponse.entity.dataBytes)
-          )
+      case Success(httpResponse) =>
+        Source.future(if (httpResponse.status == StatusCodes.OK) {
+          WarpClientUtils.readAllDataBytes(httpResponse.entity.dataBytes)
+        } else if (httpResponse.status == StatusCodes.InternalServerError) {
+          // In case of 500, we try to read headers which are human-readable and fallback on response body which is HTML
+          val error: Option[String] = httpResponse.headers.findLast(_.is("x-warp10-error-message")).map(_.value)
+          val line: Option[Int] = httpResponse.headers.findLast(_.is("x-warp10-error-line")).map(_.value).flatMap { v =>
+            try {
+              Some(v.toInt)
+            } catch {
+              case _: Exception => None
+            }
+          }
+
+          error match
+            case Some(err) => Future.successful(throw WarpException(err, line))
+            case None =>
+              WarpClientUtils.readAllDataBytes(httpResponse.entity.dataBytes).map(WarpException(_, line)).map(throw _)
         } else {
-          Source.future(
-            WarpClientUtils
-              .readAllDataBytes(httpResponse.entity.dataBytes)
-              .map(content => WarpException(s"HTTP status: ${httpResponse.status.intValue.toString}: $content"))
-              .map(throw _)
-          )
-        }
-      }
+          WarpClientUtils
+            .readAllDataBytes(httpResponse.entity.dataBytes)
+            .map(content => WarpException(s"HTTP status: ${httpResponse.status.intValue.toString}: $content"))
+            .map(throw _)
+
+        })
       case Failure(e) => throw e
     }
   }
