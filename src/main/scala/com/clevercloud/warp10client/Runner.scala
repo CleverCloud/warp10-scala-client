@@ -63,7 +63,17 @@ object Runner {
                 .map(_.value)
                 .flatMap(_.toIntOption)
 
-        })
+              error match
+                case Some(err) => Future.successful(throw WarpException(err, line))
+                case None => WarpClientUtils
+                  .readAllDataBytes(httpResponse.entity.dataBytes)
+                  .map(WarpException(_, line))
+                  .map(throw _)
+            case status => WarpClientUtils
+                .readAllDataBytes(httpResponse.entity.dataBytes)
+                .map(content => WarpException(s"HTTP status: ${status.intValue.toString}: $content"))
+                .map(throw _)
+          )
       case Failure(e) => throw e
     }
   }
