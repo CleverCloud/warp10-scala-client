@@ -7,6 +7,7 @@ import scala.util.{ Failure, Success, Try }
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.http.scaladsl.model.*
+import pekko.http.scaladsl.model.StatusCodes.{OK, InternalServerError}
 import pekko.stream.scaladsl.{ Flow, Source }
 import io.circe.*
 import io.circe.parser.*
