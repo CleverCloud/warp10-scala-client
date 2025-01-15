@@ -38,6 +38,7 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
       Seq[GTS] contains data -> on fetch success                      $e2
 
       invalid WS throw comprehensive error                            $r3
+      invalid response throw error                                    $r4
   """
 
   val zonedNow: ZonedDateTime = ZonedDateTime.now
