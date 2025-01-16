@@ -76,7 +76,5 @@ case class RecordsSince(now: LocalDateTime, limit: Long) extends FetchRange {
 
 case class RecordsSinceMicros(now: Long, limit: Long) extends FetchRange {
 
-  override def serialize: String = {
-    s"now=${now}&timespan=-${limit.abs}"
-  }
+  override def serialize: String = s"now=${now}&timespan=-${limit.abs}"
 }

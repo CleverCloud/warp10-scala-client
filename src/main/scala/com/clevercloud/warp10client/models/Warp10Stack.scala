@@ -1,6 +1,7 @@
 package com.clevercloud.warp10client.models
 
 import io.circe.{ Decoder, Json }
+import cats.syntax.either.catsSyntaxEither
 
 case class Warp10Stack(json: Json) {
 

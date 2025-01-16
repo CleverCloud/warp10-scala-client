@@ -94,18 +94,15 @@ object gts_module {
                 .map(GTSPoint.parse)
                 .foldRight(Right(Nil): Either[InvalidGTSFormat, List[GTSPoint]])((e, acc) =>
                   for (xs <- acc; x <- e) yield x :: xs
-                ) match {
-                case Left(e)       => Left(e)
-                case Right(points) => Right(GTS(classname = classname, labels = labels, points = firstPoint :: points))
-              }
+                )
+                .map { points => GTS(classname = classname, labels = labels, points = firstPoint :: points) }
             }
             case _ =>
               Left(
                 ListInvalidGTSFormat(
-                  Seq(tsEither, coordinatesEither, elevEither, classnameEither, labelsEither, valueEither)
-                    .filter(_.isLeft)
-                    .map(_.left)
-                    .map(_.get)
+                  Seq(tsEither, coordinatesEither, elevEither, classnameEither, labelsEither, valueEither).collect {
+                    case Left(e) => e
+                  }
                 )
               )
           }
@@ -180,7 +177,9 @@ object gts_module {
             case _ =>
               Left(
                 ListInvalidGTSPointFormat(
-                  Seq(tsEither, coordinatesEither, elevEither, valueEither).filter(_.isLeft).map(_.left).map(_.get)
+                  Seq(tsEither, coordinatesEither, elevEither, valueEither).filter(_.isLeft).collect {
+                    case Left(e) => e
+                  }
                 )
               )
           }
@@ -291,22 +290,20 @@ object gts_module {
     ) extends GTSValue {
     override def serialize: String = s":$prefix:${`macro`}:${this.printValues}"
 
-    def printValues = {
-      this.values
-        .map({
-          case (key, value) => {
-            value match {
-              case _: String      => s"'$key' '$value'"
-              case _: Double      => s"'$key' $value"
-              case _: Long        => s"'$key' $value"
-              case _: Boolean     => s"'$key' $value"
-              case _: Int         => s"'$key' $value"
-              case _: Array[Byte] => s"'$key' $value"
-            }
+    def printValues = this.values
+      .map({
+        case (key, value) => {
+          value match {
+            case _: String      => s"'$key' '$value'"
+            case _: Double      => s"'$key' $value"
+            case _: Long        => s"'$key' $value"
+            case _: Boolean     => s"'$key' $value"
+            case _: Int         => s"'$key' $value"
+            case _: Array[Byte] => s"'$key' $value"
           }
-        })
-        .mkString("{", " ", "}")
-    }
+        }
+      })
+      .mkString("{", " ", "}")
   }
 
   object GTSValue {
