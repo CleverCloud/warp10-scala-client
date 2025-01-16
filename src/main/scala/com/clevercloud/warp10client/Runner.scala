@@ -7,10 +7,13 @@ import scala.util.{ Failure, Success, Try }
 import org.apache.pekko
 import pekko.NotUsed
 import pekko.http.scaladsl.model.*
+import pekko.http.scaladsl.model.StatusCodes.{OK, InternalServerError}
 import pekko.stream.scaladsl.{ Flow, Source }
 import io.circe.*
 import io.circe.parser.*
 import com.clevercloud.warp10client.models.gts_module.*
+
+import scala.concurrent.Future
 
 object Runner {
   type WarpScript = String
@@ -48,20 +51,30 @@ object Runner {
     import warpClientContext._
 
     Flow[Try[HttpResponse]].flatMapConcat {
-      case Success(httpResponse) => {
-        if (httpResponse.status == StatusCodes.OK) {
-          Source.future(
-            WarpClientUtils.readAllDataBytes(httpResponse.entity.dataBytes)
+      case Success(httpResponse) =>
+        Source.future(
+          httpResponse.status match
+            case OK => WarpClientUtils.readAllDataBytes(httpResponse.entity.dataBytes)
+            case InternalServerError =>
+              // In case of 500, we try to read headers which are human-readable and fallback on response body which is HTML
+              val error: Option[String] = httpResponse.headers.findLast(_.is("x-warp10-error-message")).map(_.value)
+              val line: Option[Int] = httpResponse
+                .headers
+                .findLast(_.is("x-warp10-error-line"))
+                .map(_.value)
+                .flatMap(_.toIntOption)
+
+              error match
+                case Some(err) => Future.successful(throw WarpException(err, line))
+                case None => WarpClientUtils
+                  .readAllDataBytes(httpResponse.entity.dataBytes)
+                  .map(WarpException(_, line))
+                  .map(throw _)
+            case status => WarpClientUtils
+                .readAllDataBytes(httpResponse.entity.dataBytes)
+                .map(content => WarpException(s"HTTP status: ${status.intValue.toString}: $content"))
+                .map(throw _)
           )
-        } else {
-          Source.future(
-            WarpClientUtils
-              .readAllDataBytes(httpResponse.entity.dataBytes)
-              .map(content => WarpException(s"HTTP status: ${httpResponse.status.intValue.toString}: $content"))
-              .map(throw _)
-          )
-        }
-      }
       case Failure(e) => throw e
     }
   }

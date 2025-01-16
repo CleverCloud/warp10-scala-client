@@ -44,7 +44,7 @@ case class WarpClientContext(
   implicit def implicitWarpConfiguration: WarpConfiguration = configuration
 }
 
-case class WarpException(error: String) extends Exception(error)
+case class WarpException(error: String, line: Option[Int] = None) extends Exception(error)
 
 object `X-Warp10-Token` {
 

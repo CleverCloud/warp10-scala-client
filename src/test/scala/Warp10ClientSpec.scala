@@ -3,10 +3,11 @@ import java.util.UUID
 import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.duration.Duration as Period
 import scala.concurrent.duration.MILLISECONDS
+import scala.concurrent.duration.SECONDS
 import scala.util.{Failure, Success}
 import org.apache.pekko
 import pekko.actor.ActorSystem
-import pekko.http.scaladsl.model.{HttpRequest, HttpResponse, StatusCodes}
+import pekko.http.scaladsl.model.{HttpMethod, HttpMethods, HttpRequest, HttpResponse, StatusCodes}
 import pekko.stream.Materializer
 import pekko.stream.scaladsl.Flow
 import com.clevercloud.warp10client.*
@@ -35,6 +36,9 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
       WarpException -> on invalid data                                $p6
 
       Seq[GTS] contains data -> on fetch success                      $e2
+
+      invalid WS throw comprehensive error                            $r3
+      invalid response throw error                                    $r4
   """
 
   val zonedNow: ZonedDateTime = ZonedDateTime.now
@@ -202,6 +206,31 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
     ),
     Period(10000, MILLISECONDS)
   ) must beAnInstanceOf[Right[?, ?]]
+
+  def e3: Warp10Stack = Await.result(realWarpClient.execStack("fdsfds"), Period(10, SECONDS))
+  val r3: MatchResult[Warp10Stack] = e3 must throwA[WarpException].like {
+    case e: WarpException =>
+      e.error must beEqualTo("Exception at '=>fdsfds<=' in section [TOP] (Unknown function 'fdsfds')")
+      e.line.getOrElse(0) must beEqualTo(1)
+
+  }
+
+  // If no 'error' header is set, fallback to HTML body
+  Await.result(
+    MockServer.handleRequest(
+      HttpMethods.POST,
+      "/api/v0/exec",
+      HttpResponse(status = 500, entity = "<h1>some error</h1>")
+    ),
+    Period(3, SECONDS)
+  )
+  val mockWarpClient: Warp10Client = WarpClient(MockServer.interface, MockServer.port)
+  def e4: Warp10Stack = Await.result(mockWarpClient.execStack("token"), Period(10, SECONDS))
+  val r4: MatchResult[Warp10Stack] = e4 must throwAn[WarpException].like {
+    case e: WarpException =>
+      e.error must beEqualTo("<h1>some error</h1>")
+      e.line must be(None)
+  }
 
   // private def getNbGTSPoints(gtsSeq: Seq[GTS]): Int = gtsSeq.map(_.points.size).sum
 
