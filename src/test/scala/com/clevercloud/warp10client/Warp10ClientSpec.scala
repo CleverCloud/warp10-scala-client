@@ -59,11 +59,10 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
     )(implicit
       actorMaterializer: Materializer,
       executionContext: ExecutionContext
-    ) = {
-    WarpClientContext(
+    ) = WarpClientContext(
       poolClientFlow = {
         Flow[(HttpRequest, UUID)].mapAsync(1) {
-          case (httpRequest, requestKey) => {
+          case (httpRequest, requestKey) =>
             WarpClientUtils
               .readAllDataBytes(httpRequest.entity.dataBytes)
               .map {
@@ -75,13 +74,11 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
                 case _ => Success(HttpResponse(StatusCodes.NotImplemented))
               }
               .map(httpResponse => (httpResponse, requestKey))
-          }
         }
       },
       actorMaterializer = actorMaterializer,
       configuration = warpConfiguration
     )
-  }
 
   val wPushClient = new Warp10Client(pushContext())
 

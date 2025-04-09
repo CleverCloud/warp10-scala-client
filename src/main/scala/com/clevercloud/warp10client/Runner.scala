@@ -18,10 +18,7 @@ import scala.concurrent.Future
 object Runner {
   type WarpScript = String
 
-  def exec(
-    )(implicit
-      warpClientContext: WarpClientContext
-    ): Flow[WarpScript, String, NotUsed] = {
+  def exec()(implicit warpClientContext: WarpClientContext): Flow[WarpScript, String, NotUsed] = {
     val uuid = UUID.randomUUID
     Flow[WarpScript]
       .map(script => execRequest(script))
@@ -32,22 +29,13 @@ object Runner {
       .via(processResponseTry)
   }
 
-  private def execRequest(
-      script: WarpScript
-    )(implicit
-      warpClientContext: WarpClientContext
-    ) = {
-    HttpRequest(
+  private def execRequest(script: WarpScript)(using warpClientContext: WarpClientContext) = HttpRequest(
       method = HttpMethods.POST,
       uri = warpClientContext.configuration.execUrl,
       entity = HttpEntity(script)
     )
-  }
 
-  def processResponseTry(
-      implicit
-      warpClientContext: WarpClientContext
-    ): Flow[Try[HttpResponse], String, NotUsed] = {
+  def processResponseTry(using warpClientContext: WarpClientContext): Flow[Try[HttpResponse], String, NotUsed] = {
     import warpClientContext._
 
     Flow[Try[HttpResponse]].flatMapConcat {
@@ -79,17 +67,14 @@ object Runner {
     }
   }
 
-  private def parseJson: Flow[String, Json, NotUsed] = {
-    Flow[String].map { s =>
+  private def parseJson: Flow[String, Json, NotUsed] = Flow[String].map { s =>
       parse(s) match {
         case Right(json) => json
         case Left(e)     => throw WarpException(s"Error on parsing: $e")
       }
     }
-  }
 
-  def jsonToGTSSeq(): Flow[String, Seq[GTS], NotUsed] = {
-    Flow[String]
+  def jsonToGTSSeq(): Flow[String, Seq[GTS], NotUsed] = Flow[String]
       .via(parseJson)
       .map { json => json.hcursor.downArray } // warp response contains [[]] or [{}] so we drop an array level
       .map { array => // global array with all matching script
@@ -156,7 +141,6 @@ object Runner {
           }
           .toSeq
       }
-  }
 
   def jsonToStack(): Flow[String, Warp10Stack, NotUsed] = Flow[String].via(parseJson).map(Warp10Stack.apply)
 }

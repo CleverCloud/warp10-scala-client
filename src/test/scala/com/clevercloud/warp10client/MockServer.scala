@@ -16,22 +16,15 @@ object MockServer {
   val interface = "localhost"
   val port = 8888
 
-  def handleRequest(
-      method: HttpMethod,
-      uri: Uri,
-      response: HttpResponse
-      // httpRequest: HttpRequest
-    )(implicit
+  def handleRequest(method: HttpMethod, uri: Uri, response: HttpResponse)(using
       system: ActorSystem
     ): Future[Http.ServerBinding] = {
 
     val serverSource: Source[Http.IncomingConnection, Future[Http.ServerBinding]] =
       Http().newServerAt(interface, port).connectionSource()
 
-    // val requestPath = httpRequest.uri.path.toString()
-
     val requestHandler: HttpRequest => HttpResponse = {
-      case HttpRequest(method, uri, _, _, _) => // Uri.Path(`requestPath`)
+      case HttpRequest(method, uri, _, _, _) =>
         response
       case _: HttpRequest =>
         HttpResponse(404, entity = "Unknown resource!")
