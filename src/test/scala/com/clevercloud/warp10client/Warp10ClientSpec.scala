@@ -1,3 +1,5 @@
+package com.clevercloud.warp10client
+
 import java.time.*
 import java.util.UUID
 import scala.concurrent.{Await, ExecutionContext, Future}
@@ -57,11 +59,10 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
     )(implicit
       actorMaterializer: Materializer,
       executionContext: ExecutionContext
-    ) = {
-    WarpClientContext(
+    ) = WarpClientContext(
       poolClientFlow = {
         Flow[(HttpRequest, UUID)].mapAsync(1) {
-          case (httpRequest, requestKey) => {
+          case (httpRequest, requestKey) =>
             WarpClientUtils
               .readAllDataBytes(httpRequest.entity.dataBytes)
               .map {
@@ -73,19 +74,17 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
                 case _ => Success(HttpResponse(StatusCodes.NotImplemented))
               }
               .map(httpResponse => (httpResponse, requestKey))
-          }
         }
       },
       actorMaterializer = actorMaterializer,
       configuration = warpConfiguration
     )
-  }
 
   val wPushClient = new Warp10Client(pushContext())
 
   val gtsPointSeq1: Seq[GTSPoint] = Seq(GTSPoint(Some(1.toLong), None, None, GTSLongValue(73346576)))
   val validSend_f: Future[Either[WarpException, Unit]] = wPushClient.push(GTS("testClass", Map.empty[String, String], gtsPointSeq1), writeToken)
-  def p1 = Await.result(validSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[?, ?]]
+  def p1: MatchResult[Either[WarpException, Unit]] = Await.result(validSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[?, ?]]
 
   val gtsPointSeq2: Seq[GTSPoint] = Seq(GTSPoint(None, None, None, GTSLongValue(7)))
 
@@ -93,25 +92,20 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
     GTS("testFailClass{}", Map("label1" -> "dsfF3", "label2" -> "dsfg"), gtsPointSeq2),
     "invalid_write_token"
   )
-  def p2 = Await.result(invalidTokenSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Left[?, ?]]
+  def p2: MatchResult[Either[WarpException, Unit]] = Await.result(invalidTokenSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Left[?, ?]]
 
   val gtsPointSeq4: Seq[GTSPoint] = Seq(
-    GTSPoint(Some(4.toLong), Some(Coordinates(1.0.toDouble, -0.1.toDouble)), Some(1.toLong), GTSStringValue("string"))
+    GTSPoint(Some(4.toLong), Some(Coordinates(1.0, -0.1)), Some(1.toLong), GTSStringValue("string"))
   )
 
   val fullDataFieldSend_f: Future[Either[WarpException, Unit]] =
     wPushClient.push(GTS("testFullDataField", Map("lbl1" -> "test", "lbl2" -> "test"), gtsPointSeq4), writeToken)
-  def p4 = Await.result(fullDataFieldSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[?, ?]]
+  def p4: MatchResult[Either[WarpException, Unit]] = Await.result(fullDataFieldSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[?, ?]]
 
   // FETCH TESTS
-  private def fetchContext(
-    )(implicit
-      actorMaterializer: Materializer
-    ) = {
-    WarpClientContext(
+  private def fetchContext()(implicit actorMaterializer: Materializer) = WarpClientContext(
       poolClientFlow = Flow[(HttpRequest, UUID)].map {
-        case (httpRequest, requestKey) => {
-          (
+        case (httpRequest, requestKey) => (
             httpRequest.uri.rawQueryString match {
               // case Some(x) => println(x.toString) ; Success(HttpResponse(StatusCodes.OK)) // use it to debug
               case Some(query) if query.contains("selector=test") => {
@@ -136,19 +130,18 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
             },
             requestKey
           )
-        }
       },
       actorMaterializer = actorMaterializer,
       configuration = warpConfiguration
     )
-  }
+
 
   val wFetchClient = new Warp10Client(fetchContext())
 
   val gtsPointForSeq: Seq[GTSPoint] = Seq(
-    GTSPoint(Some(1434590504.toLong), None, None, GTSDoubleValue(-0.6133061918698982.toDouble)),
-    GTSPoint(Some(1434590288.toLong), None, None, GTSDoubleValue(0.9228427144511169.toDouble)),
-    GTSPoint(Some(1434590072.toLong), None, None, GTSDoubleValue(-0.1301889411087915.toDouble))
+    GTSPoint(Some(1434590504.toLong), None, None, GTSDoubleValue(-0.6133061918698982)),
+    GTSPoint(Some(1434590288.toLong), None, None, GTSDoubleValue(0.9228427144511169)),
+    GTSPoint(Some(1434590072.toLong), None, None, GTSDoubleValue(-0.1301889411087915))
   )
 
   val realSeq: Seq[GTS] = Seq(
