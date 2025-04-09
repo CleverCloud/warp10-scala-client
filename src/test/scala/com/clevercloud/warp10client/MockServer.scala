@@ -1,3 +1,5 @@
+package com.clevercloud.warp10client
+
 import org.apache.pekko
 import org.apache.pekko.actor.ActorSystem
 import org.apache.pekko.http.scaladsl.Http

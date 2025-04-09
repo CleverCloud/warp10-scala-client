@@ -104,56 +104,54 @@ object Runner {
             GTS(
               classname = `class`,
               labels = labels,
-              points = (series \\ "v").map { seriesContentArrays => // [[point_1], [point_2], ...]
+              points = (series \\ "v").flatMap { seriesContentArrays => // [[point_1], [point_2], ...]
                 seriesContentArrays.asArray.get.map { point => // [point_i]
-                  point.asArray.get match { // [timestamp, lat, lon, elev, value] is point's content
-                    case Vector(timestamp: Json, value: Json) => {
+                  point.asArray.getOrElse(Vector(0, 0, 0, 0, 0)) match { // [timestamp, lat, lon, elev, value] is point's content
+                    case Vector(timestamp: Json, value: Json) =>
                       GTSPoint(
                         timestamp.asNumber.get.toLong,
                         None,
                         None,
                         GTSValue.parse(value) match {
                           case Right(gtsPoint) => gtsPoint
-                          case Left(e)         => GTSStringValue(s"${e.toString}: ${value.toString}.")
+                          case Left(e) => GTSStringValue(s"${e.toString}: ${value.toString}.")
                         }
                       )
-                    }
-                    case Vector(timestamp: Json, elevation: Json, value: Json) => {
+                    case Vector(timestamp: Json, elevation: Json, value: Json) =>
                       GTSPoint(
                         timestamp.asNumber.get.toLong,
                         None,
                         elevation.asNumber.get.toLong,
                         GTSValue.parse(value) match {
                           case Right(gtsPoint) => gtsPoint
-                          case Left(e)         => GTSStringValue(s"${e.toString}: ${value.toString}.")
+                          case Left(e) => GTSStringValue(s"${e.toString}: ${value.toString}.")
                         }
                       )
-                    }
-                    case Vector(timestamp: Json, latitude: Json, longitude: Json, value: Json) => {
+                    case Vector(timestamp: Json, latitude: Json, longitude: Json, value: Json) =>
                       GTSPoint(
                         timestamp.asNumber.get.toLong,
                         Some(Coordinates(latitude.asNumber.get.toDouble, longitude.asNumber.get.toDouble)),
                         None,
                         GTSValue.parse(value) match {
                           case Right(gtsPoint) => gtsPoint
-                          case Left(e)         => GTSStringValue(s"${e.toString}: ${value.toString}.")
+                          case Left(e) => GTSStringValue(s"${e.toString}: ${value.toString}.")
                         }
                       )
-                    }
-                    case Vector(timestamp: Json, latitude: Json, longitude: Json, elevation: Json, value: Json) => {
+                    case Vector(timestamp: Json, latitude: Json, longitude: Json, elevation: Json, value: Json) =>
                       GTSPoint(
                         timestamp.asNumber.get.toLong,
                         Some(Coordinates(latitude.asNumber.get.toDouble, longitude.asNumber.get.toDouble)),
                         elevation.asNumber.get.toLong,
                         GTSValue.parse(value) match {
                           case Right(gtsPoint) => gtsPoint
-                          case Left(e)         => GTSStringValue(s"${e.toString}: ${value.toString}.")
+                          case Left(e) => GTSStringValue(s"${e.toString}: ${value.toString}.")
                         }
                       )
-                    }
+
+                    case Vector(_*) => ???
                   }
                 }
-              }.toSeq.flatten
+              }
             )
           }
           .toSeq
