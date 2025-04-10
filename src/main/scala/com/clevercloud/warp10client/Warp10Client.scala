@@ -6,15 +6,15 @@ import pekko.NotUsed
 import pekko.actor.ActorSystem
 import pekko.http.scaladsl.Http
 import pekko.stream.Materializer
-import pekko.stream.scaladsl.{ Flow, Sink, Source }
-import com.clevercloud.warp10client.Runner.{ WarpScript, jsonToGTSSeq, jsonToStack }
+import pekko.stream.scaladsl.{Flow, Sink, Source}
+import com.clevercloud.warp10client.Runner.{WarpScript, jsonToGTSSeq, jsonToStack}
 import com.clevercloud.warp10client.models.*
 import com.clevercloud.warp10client.models.gts_module.GTS
-
+import org.apache.pekko.http.scaladsl.model.Uri
 import scala.concurrent.Future
 
 object WarpClient {
-  import WarpClientUtils._
+  import WarpClientUtils.*
 
   def apply(
       host: String,
@@ -43,11 +43,24 @@ object WarpClient {
       )
     )
 
+  def apply(uri: Uri)(using actorSystem: ActorSystem): Warp10Client = Warp10Client(
+    WarpClientContext(
+      WarpConfiguration(uri),
+      uri.scheme match {
+        case "http" => Http().cachedHostConnectionPool[UUID](uri.authority.host.address, uri.effectivePort)
+        case "https" => Http().cachedHostConnectionPoolHttps[UUID](uri.authority.host.address, uri.effectivePort)
+      },
+      Materializer(actorSystem)
+    )
+  )
+
+  def apply(endpoint: String)(using actorSystem: ActorSystem): Warp10Client = WarpClient(Uri(endpoint))
+
   def closePool()(using actorSystem: ActorSystem): Future[Unit] = Http().shutdownAllConnectionPools()
 }
 
 class Warp10Client(warpContext: WarpClientContext) {
-  import warpContext._
+  import warpContext.*
 
   given WarpClientContext = warpContext
   def fetch(readToken: String): Flow[Query[FetchRange], Future[Either[WarpException, Seq[GTS]]], NotUsed] =

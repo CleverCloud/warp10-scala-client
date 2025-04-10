@@ -34,5 +34,6 @@ class GTSSpec extends Specification {
   def g1: MatchResult[String] = gts.serialize must beEqualTo(serialized)
 
   // not implemented
-  def g2: MatchResult[Either[gts_errors.InvalidGTSPointFormat, GTSValue]] = GTSValue.parse(serialized) must beAnInstanceOf[Left[?, ?]]
+  def g2: MatchResult[Either[gts_errors.InvalidGTSPointFormat, GTSValue]] =
+    GTSValue.parse(serialized) must beAnInstanceOf[Left[?, ?]]
 }

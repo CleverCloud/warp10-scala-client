@@ -55,11 +55,7 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
   given warpConfiguration: WarpConfiguration = WarpConfiguration(warp10_url)
 
   // PUSH TESTS
-  private def pushContext(
-    )(implicit
-      actorMaterializer: Materializer,
-      executionContext: ExecutionContext
-    ) = WarpClientContext(
+  private def pushContext()(using actorMaterializer: Materializer, executionContext: ExecutionContext) = WarpClientContext(
       poolClientFlow = {
         Flow[(HttpRequest, UUID)].mapAsync(1) {
           case (httpRequest, requestKey) =>
@@ -103,7 +99,7 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
   def p4: MatchResult[Either[WarpException, Unit]] = Await.result(fullDataFieldSend_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[?, ?]]
 
   // FETCH TESTS
-  private def fetchContext()(implicit actorMaterializer: Materializer) = WarpClientContext(
+  private def fetchContext()(using actorMaterializer: Materializer) = WarpClientContext(
       poolClientFlow = Flow[(HttpRequest, UUID)].map {
         case (httpRequest, requestKey) => (
             httpRequest.uri.rawQueryString match {
