@@ -4,18 +4,12 @@ import io.circe.{ Decoder, Json }
 
 case class Warp10Stack(json: Json) {
 
-  def head[T](
-      implicit
-      d: Decoder[T]
-    ): Either[String, T] = get(0)
+  def head[T](using d: Decoder[T]): Either[String, T] = get(0)
 
   def size: Int = json.asArray.knownSize
 
-  def get[T](
-      index: Int
-    )(implicit
-      d: Decoder[T]
-    ): Either[String, T] = json.asArray
+  def get[T](index: Int)(using d: Decoder[T]): Either[String, T] = json
+    .asArray
     .map(Right(_))
     .getOrElse(Left("invalid stack"))
     .map { array => array.apply(index) }
