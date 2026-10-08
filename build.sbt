@@ -1,4 +1,4 @@
-lazy val circeVersion = "0.14.9"
+lazy val circeVersion = "0.14.17"
 lazy val pekkoVersion = "1.7.1"
 lazy val pekkoHttpVersion = "1.4.1"
 
