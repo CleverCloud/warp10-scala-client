@@ -1,3 +1,5 @@
+package com.clevercloud.warp10client
+
 import com.clevercloud.testcontainers.scala.Warp10Container
 import org.specs2.specification.BeforeAfterAll
 
