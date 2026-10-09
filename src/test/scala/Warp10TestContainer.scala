@@ -2,7 +2,7 @@ import com.clevercloud.testcontainers.scala.Warp10Container
 import org.specs2.specification.BeforeAfterAll
 
 trait Warp10TestContainer extends BeforeAfterAll {
-  private val version = "2.7.5"
+  private val version = "3.4.1-ubuntu-ci"
   private val container: Warp10Container = new Warp10Container(tag = version)
 
   container.start()
