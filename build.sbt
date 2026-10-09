@@ -1,6 +1,6 @@
-lazy val circeVersion = "0.14.12"
-lazy val pekkoVersion = "1.0.3"
-lazy val pekkoHttpVersion = "1.1.0"
+lazy val circeVersion = "0.14.17"
+lazy val pekkoVersion = "1.7.1"
+lazy val pekkoHttpVersion = "1.4.1"
 
 ThisBuild / organization := "com.clever-cloud"
 ThisBuild / homepage := Some(url("https://github.com/clevercloud/warp10-scala-client"))
@@ -23,17 +23,17 @@ ThisBuild / scmInfo := Some(
   )
 )
 ThisBuild / libraryDependencies ++= Seq(
-  "org.apache.commons" % "commons-text" % "1.13.0",
+  "org.apache.commons" % "commons-text" % "1.15.0",
   "org.apache.pekko" %% "pekko-actor" % pekkoVersion,
   "org.apache.pekko" %% "pekko-stream" % pekkoVersion,
   "org.apache.pekko" %% "pekko-http" % pekkoHttpVersion,
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
-  "ch.qos.logback" % "logback-classic" % "1.5.18",
-  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
+  "ch.qos.logback" % "logback-classic" % "1.5.38",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.6",
   "org.specs2" %% "specs2-core" % "4.21.0" % Test,
-  "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.1.2" % Test
+  "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.1.4" % Test
 )
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
