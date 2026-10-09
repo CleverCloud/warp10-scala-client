@@ -91,7 +91,7 @@ object Runner {
               labels = labels,
               points = (series \\ "v").flatMap { seriesContentArrays => // [[point_1], [point_2], ...]
                 seriesContentArrays.asArray.get.map { point => // [point_i]
-                  point.asArray.getOrElse(Vector(0, 0, 0, 0, 0)) match { // [timestamp, lat, lon, elev, value] is point's content
+                  point.asArray.getOrElse(throw WarpException(s"Can't parse GTS point: $point.")) match { // [timestamp, lat, lon, elev, value] is point's content
                     case Vector(timestamp: Json, value: Json) =>
                       GTSPoint(
                         timestamp.asNumber.get.toLong,
@@ -133,7 +133,7 @@ object Runner {
                         }
                       )
 
-                    case Vector(_*) => ???
+                    case other => throw WarpException(s"Can't parse GTS point with ${other.size} elements: $point.")
                   }
                 }
               }

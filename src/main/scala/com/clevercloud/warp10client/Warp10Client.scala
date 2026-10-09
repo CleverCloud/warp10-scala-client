@@ -49,6 +49,7 @@ object WarpClient {
       uri.scheme match {
         case "http" => Http().cachedHostConnectionPool[UUID](uri.authority.host.address, uri.effectivePort)
         case "https" => Http().cachedHostConnectionPoolHttps[UUID](uri.authority.host.address, uri.effectivePort)
+        case scheme => throw WarpException(s"Unsupported scheme `$scheme` in Warp10 endpoint $uri.")
       },
       Materializer(actorSystem)
     )
