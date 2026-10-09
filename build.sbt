@@ -56,8 +56,8 @@ ThisBuild / githubWorkflowPublish := Seq(
     env = Map(
       "PGP_PASSPHRASE" -> "${{ secrets.PGP_PASSPHRASE }}",
       "PGP_SECRET" -> "${{ secrets.PGP_SECRET }}",
-      "SONATYPE_PASSWORD" -> "${{ secrets.OSSRH_TOKEN }}",
-      "SONATYPE_USERNAME" -> "${{ secrets.OSSRH_USERNAME }}"
+      "SONATYPE_PASSWORD" -> "${{ secrets.CENTRAL_TOKEN }}",
+      "SONATYPE_USERNAME" -> "${{ secrets.CENTRAL_USERNAME }}"
     )
   )
 )
