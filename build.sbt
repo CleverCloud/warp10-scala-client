@@ -14,7 +14,7 @@ ThisBuild / developers := List(
   )
 )
 ThisBuild / version := "2.1.0"
-ThisBuild / scalaVersion := "3.4.2"
+ThisBuild / scalaVersion := "3.6.4"
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -33,7 +33,7 @@ ThisBuild / libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.5.38",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.6",
   "org.specs2" %% "specs2-core" % "4.20.2" % Test,
-  "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.1.0" % Test
+  "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.1.4" % Test
 )
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
