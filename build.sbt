@@ -13,7 +13,7 @@ ThisBuild / developers := List(
     url("https://alexandre-duval.fr")
   )
 )
-ThisBuild / version := "2.1.0"
+ThisBuild / version := "3.0.0"
 ThisBuild / scalaVersion := "3.6.4"
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / scmInfo := Some(

@@ -153,7 +153,7 @@ class Warp10ClientSpec extends Specification with Warp10TestContainer {
   def f2: MatchResult[Either[WarpException, Seq[GTS]]] = Await.result(validFetch_f, Period(1000, MILLISECONDS)) must beAnInstanceOf[Right[?, ?]]
 
   // PUSH 10 000 GTS to real Warp10
-  val realWarpClient: Warp10Client = WarpClient(warp10_host, warp10_port)
+  val realWarpClient: Warp10Client = WarpClient(warp10_url)
 
   // check no data
   def e1: MatchResult[Either[WarpException, Seq[GTS]]] = Await.result(
