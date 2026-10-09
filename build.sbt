@@ -47,9 +47,6 @@ ThisBuild / git.remoteRepo := "git@github.com:clevercloud/warp10-scala-client.gi
 enablePlugins(GhpagesPlugin)
 enablePlugins(SiteScaladocPlugin)
 
-ThisBuild / sonatypeCredentialHost := "s01.oss.sonatype.org"
-ThisBuild / sonatypeRepository := "https://s01.oss.sonatype.org/service/local"
-
 ThisBuild / githubWorkflowJavaVersions := Seq(JavaSpec(JavaSpec.Distribution.Temurin, "21"))
 ThisBuild / githubWorkflowTargetTags ++= Seq("v*")
 ThisBuild / githubWorkflowPublishTargetBranches := Seq(RefPredicate.StartsWith(Ref.Tag("v")))
