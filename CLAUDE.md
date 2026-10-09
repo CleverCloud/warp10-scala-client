@@ -11,9 +11,8 @@ A Scala 3 client library for the [Warp10](https://www.warp10.io/) geo/time serie
 ```bash
 sbt compile
 sbt test                                                  # full suite, needs Docker (see below)
-sbt "testOnly GTSSpec"                                    # specs in the default package
-sbt "testOnly com.clevercloud.warp10client.Warp10StackTest"
-sbt "testOnly Warp10ClientSpec -- ex \"fetch success\""   # filter specs2 examples by name
+sbt "testOnly com.clevercloud.warp10client.GTSSpec"
+sbt "testOnly *Warp10ClientSpec -- ex \"fetch success\""  # filter specs2 examples by name
 sbt githubWorkflowGenerate                                # regenerate .github/workflows after build.sbt changes
 sbt ghpagesPushSite                                       # publish scaladoc to gh-pages
 ```
@@ -34,9 +33,9 @@ sbt ghpagesPushSite                                       # publish scaladoc to 
 
 Everything lives in `src/main/scala/com/clevercloud/warp10client`.
 
-**Entry points.** `object WarpClient` (in `Warp10Client.scala`) is the factory; `class Warp10Client` is the API. The README shows `Warp10Client(host, port)`, but the actual call is `WarpClient(host, port, scheme)` with implicit `WarpConfiguration`, `ActorSystem` and `Materializer` in scope. `WarpConfiguration(baseUrl)` derives the three endpoints: `/api/v0/update`, `/api/v0/fetch`, `/api/v0/exec`.
+**Entry points.** `object WarpClient` (in `Warp10Client.scala`) is the factory; `class Warp10Client` is the API. `WarpClient(endpoint)` / `WarpClient(uri)` only need a given `ActorSystem` and build the pool and configuration from the URL; `WarpClient(host, port, scheme)` and `WarpClient(poolClientFlow)` take a given `WarpConfiguration` and `Materializer` as well. Context parameters are Scala 3 `using` clauses throughout. `WarpConfiguration(baseUrl)` derives the three endpoints: `/api/v0/update`, `/api/v0/fetch`, `/api/v0/exec`.
 
-**Context and HTTP pool.** `WarpClientContext` (in `WarpClientUtils.scala`) bundles the configuration, the materializer and a `PoolClientFlow = Flow[(HttpRequest, UUID), (Try[HttpResponse], UUID), ?]`, and re-exposes them as implicits (`import warpClientContext._`). In production the flow is a Pekko `cachedHostConnectionPool[UUID]`. Because the pool flow is injectable, tests build a `WarpClientContext` with a hand-written `Flow` that pattern-matches on the request body and returns canned responses — this is the preferred way to unit test request serialization and response handling without a server.
+**Context and HTTP pool.** `WarpClientContext` (in `WarpClientUtils.scala`) bundles the configuration, the materializer and a `PoolClientFlow = Flow[(HttpRequest, UUID), (Try[HttpResponse], UUID), ?]`, and re-exposes them as implicits (`import warpClientContext.*`). In production the flow is a Pekko `cachedHostConnectionPool[UUID]`. Because the pool flow is injectable, tests build a `WarpClientContext` with a hand-written `Flow` that pattern-matches on the request body and returns canned responses — this is the preferred way to unit test request serialization and response handling without a server.
 
 **One object per endpoint**, each exposing a Pekko Streams `Flow` that follows the same shape: build `HttpRequest` → tag with a per-flow `UUID` → `via(poolClientFlow)` → filter on that UUID → process the response.
 

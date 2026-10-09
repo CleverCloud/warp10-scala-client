@@ -35,9 +35,15 @@ import com.clevercloud.warp10client._
 import com.clevercloud.warp10client.models._
 import com.clevercloud.warp10client.models.gts_module._
 
-given executionContext: ExecutionContext = system.dispatchers.lookup("yourContext")
-given warpConfiguration: WarpConfiguration = WarpConfiguration("www.clever-cloud.com")
-val warpClient = Warp10Client("clever-cloud.com", 80)
+given actorSystem: ActorSystem = ActorSystem()
+given executionContext: ExecutionContext = actorSystem.dispatcher
+
+val warpClient = WarpClient("https://warp10.example.com")
+
+// or, to control the connection pool yourself
+given materializer: Materializer = Materializer(actorSystem)
+given warpConfiguration: WarpConfiguration = WarpConfiguration("https://warp10.example.com")
+val warpClient = WarpClient("warp10.example.com", 443, "https")
 ```
 
 ## Classical usage
