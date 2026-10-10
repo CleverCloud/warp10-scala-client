@@ -13,8 +13,8 @@ ThisBuild / developers := List(
     url("https://alexandre-duval.fr")
   )
 )
-ThisBuild / version := "3.0.1"
-ThisBuild / scalaVersion := "3.9.0"
+ThisBuild / version := "3.0.2"
+ThisBuild / scalaVersion := "3.6.4"
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / scmInfo := Some(
   ScmInfo(
@@ -33,15 +33,13 @@ ThisBuild / libraryDependencies ++= Seq(
   "ch.qos.logback" % "logback-classic" % "1.6.5",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.6",
   "org.specs2" %% "specs2-core" % "4.23.0" % Test,
-  "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.3.0" % Test
+  "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.1.4" % Test
 )
 ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
   "-unchecked",
-  "-language:postfixOps",
-  "-scala-output-version",
-  "3.6"
+  "-language:postfixOps"
 )
 ThisBuild / Test / parallelExecution := false
 ThisBuild / git.remoteRepo := "git@github.com:clevercloud/warp10-scala-client.git"
