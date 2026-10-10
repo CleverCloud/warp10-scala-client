@@ -14,7 +14,7 @@ ThisBuild / developers := List(
   )
 )
 ThisBuild / version := "3.0.0"
-ThisBuild / scalaVersion := "3.6.4"
+ThisBuild / scalaVersion := "3.9.0"
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / scmInfo := Some(
   ScmInfo(
