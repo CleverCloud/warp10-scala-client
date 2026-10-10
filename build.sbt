@@ -13,7 +13,7 @@ ThisBuild / developers := List(
     url("https://alexandre-duval.fr")
   )
 )
-ThisBuild / version := "3.0.0"
+ThisBuild / version := "3.0.1"
 ThisBuild / scalaVersion := "3.9.0"
 ThisBuild / versionScheme := Some("early-semver")
 ThisBuild / scmInfo := Some(
@@ -39,7 +39,9 @@ ThisBuild / scalacOptions ++= Seq(
   "-deprecation",
   "-feature",
   "-unchecked",
-  "-language:postfixOps"
+  "-language:postfixOps",
+  "-scala-output-version",
+  "3.6"
 )
 ThisBuild / Test / parallelExecution := false
 ThisBuild / git.remoteRepo := "git@github.com:clevercloud/warp10-scala-client.git"
