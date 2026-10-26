@@ -30,7 +30,7 @@ ThisBuild / libraryDependencies ++= Seq(
   "io.circe" %% "circe-core" % circeVersion,
   "io.circe" %% "circe-generic" % circeVersion,
   "io.circe" %% "circe-parser" % circeVersion,
-  "ch.qos.logback" % "logback-classic" % "1.6.5",
+  "ch.qos.logback" % "logback-classic" % "1.6.6",
   "com.typesafe.scala-logging" %% "scala-logging" % "3.9.6",
   "org.specs2" %% "specs2-core" % "5.9.1" % Test,
   "com.clever-cloud" %% "testcontainers-scala-warp10" % "2.1.4" % Test
